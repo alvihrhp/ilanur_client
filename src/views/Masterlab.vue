@@ -6,7 +6,46 @@
         background: 'lab.jpg'
     }"
     ></Banner>
-    <div class="data-table-container">
+    <div class="loading" v-if="masterLab.data.length === 0">
+      <img src="../assets/loading.gif" />
+    </div>
+    <div class="data-table-container" v-else>
+      <Formdialog
+        v-bind:dialogDetail="{
+        formInput,
+        btnIcon: 'mdi-eyedropper-variant',
+        btnTitle: 'Create Lab'
+      }"
+      >
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Kode Lab"
+            v-model="formInput.labKode"
+            :rules="validationRules.labKode"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Nama Pemeriksaan"
+            v-model="formInput.labNamaPemeriksaan"
+            :rules="validationRules.labNamaPemeriksaan"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-select
+            label="Tipe Pembayaran"
+            v-model="formInput.typeHarga"
+            :rules="validationRules.typeHarga"
+            :items="selectTypeHarga"
+            required
+          ></v-select>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field label="Harga Pemeriksaan" v-model="formInput.hargaLab" required></v-text-field>
+        </v-col>
+      </Formdialog>
       <Datatable
         v-bind:dataTableDetail="{
           data: masterLab.data,
@@ -21,14 +60,32 @@
 <script>
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
+import Formdialog from "../components/Formdialog";
 export default {
   name: "Masterlab",
   components: {
     Banner,
-    Datatable
+    Datatable,
+    Formdialog
   },
   created() {
     this.$store.dispatch("getMasterLab");
+  },
+  data() {
+    return {
+      formInput: {
+        labKode: "",
+        labNamaPemeriksaan: "",
+        typeHarga: null,
+        hargaLab: 0
+      },
+      validationRules: {
+        labKode: [v => !!v || "Lab Kode is required"],
+        labNamaPemeriksaan: [v => !!v || "Lab Nama Pemeriksaan is required"],
+        typeHarga: [v => !!v || "Tipe Pembayaran is required"]
+      },
+      selectTypeHarga: ["UMUM", "BPJS", "ASURANSI/PERUSAHAAN"]
+    };
   },
   computed: {
     masterLab() {
@@ -76,6 +133,13 @@ export default {
 <style scoped>
 .master-lab {
   background-color: #f5f5f5;
+}
+
+.loading {
+  text-align: center;
+  height: 100%;
+  padding-top: 100px;
+  background-color: #ffffff;
 }
 
 .data-table-container {

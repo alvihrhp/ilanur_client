@@ -6,7 +6,40 @@
         title: 'Master Perusahaan'
     }"
     ></Banner>
-    <div class="data-table-container">
+    <div class="loading" v-if="masterPerusahaan.data.length === 0">
+      <img src="../assets/loading.gif" />
+    </div>
+    <div class="data-table-container" v-else>
+      <Formdialog
+        v-bind:dialogDetail="{
+        formInput,
+        btnTitle: 'Create Perusahaan',
+        btnIcon: 'mdi-home-modern'
+      }"
+      >
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Nama Perusahaan"
+            v-model="formInput.masterPerusahaanNama"
+            :rules="validatonRules.masterPerusahaanNama"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field label="Alamat Perusahaan" v-model="formInput.masterPerusahaanAlamat"></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field label="Telepon Perusahaan" v-model="formInput.masterPerusahaanTelpon"></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Harga Perusahaan"
+            v-model="formInput.masterPerusahaanHarga"
+            :rules="validatonRules.masterPerusahaanHarga"
+            required
+          ></v-text-field>
+        </v-col>
+      </Formdialog>
       <Datatable
         v-bind:dataTableDetail="{
         data: masterPerusahaan.data,
@@ -21,14 +54,30 @@
 <script>
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
+import Formdialog from "../components/Formdialog";
 export default {
   name: "Masterperusahaan",
   components: {
     Banner,
-    Datatable
+    Datatable,
+    Formdialog
   },
   created() {
     this.$store.dispatch("getMasterPerusahaan");
+  },
+  data() {
+    return {
+      validatonRules: {
+        masterPerusahaanNama: [v => !!v || "Nama Perusahaan is required"],
+        masterPerusahaanHarga: [v => !!v || "Harga Perusahaan is required"]
+      },
+      formInput: {
+        masterPerusahaanNama: "",
+        masterPerusahaanAlamat: "",
+        masterPerusahaanTelpon: "( 021 ) ",
+        masterPerusahaanHarga: ""
+      }
+    };
   },
   computed: {
     masterPerusahaan() {
@@ -81,6 +130,13 @@ export default {
 <style scoped>
 .master-perusahaan {
   background-color: #f5f5f5;
+}
+
+.loading {
+  text-align: center;
+  height: 100%;
+  padding-top: 100px;
+  background-color: #ffffff;
 }
 
 .data-table-container {

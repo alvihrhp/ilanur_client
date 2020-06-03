@@ -6,7 +6,46 @@
         title: 'Master Ronsen'
     }"
     ></Banner>
-    <div class="data-table-container">
+    <div class="loading" v-if="masterRonsen.data.length === 0">
+      <img src="../assets/loading.gif" />
+    </div>
+    <div class="data-table-container" v-else>
+      <Formdialog
+        v-bind:dialogDetail="{
+        formInput,
+        btnTitle:'Create Ronsen',
+        btnIcon: 'mdi-laptop-mac'
+      }"
+      >
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Kode Ronsen"
+            v-model="formInput.ronsenKode"
+            :rules="validationRules.ronsenKode"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md=" 6">
+          <v-text-field
+            label="Nama Pemeriksaan"
+            v-model="formInput.ronsenNamaPemeriksaan"
+            :rules="validationRules.ronsenNamaPemeriksaan"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-select
+            label="Tipe Pembayaran"
+            v-model="formInput.typeHarga"
+            :rules="validationRules.typeHarga"
+            :items="selectTypeHarga"
+            required
+          ></v-select>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field label="Harga Pemeriksaan" v-model="formInput.harga"></v-text-field>
+        </v-col>
+      </Formdialog>
       <Datatable
         v-bind:dataTableDetail="{
         cardTitle: 'Table Ronsen',
@@ -21,14 +60,32 @@
 <script>
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
+import Formdialog from "../components/Formdialog";
 export default {
   name: "Masterronsen",
   components: {
     Banner,
-    Datatable
+    Datatable,
+    Formdialog
   },
   created() {
     this.$store.dispatch("getMasterRonsen");
+  },
+  data() {
+    return {
+      validationRules: {
+        ronsenKode: [v => !!v || "Ronsen Kode is required"],
+        ronsenNamaPemeriksaan: [v => !!v || "Nama Pemeriksaan is required"],
+        typeHarga: [v => !!v || "Tipe pembayaran is required"]
+      },
+      formInput: {
+        ronsenKode: "",
+        ronsenNamaPemeriksaan: "",
+        typeHarga: null,
+        harga: "0"
+      },
+      selectTypeHarga: ["UMUM", "BPJS", "ASURANSI/PERUSAHAAN"]
+    };
   },
   computed: {
     masterRonsen() {
@@ -76,6 +133,13 @@ export default {
 <style scoped>
 .master-ronsen {
   background-color: #f5f5f5;
+}
+
+.loading {
+  text-align: center;
+  height: 100%;
+  padding-top: 100px;
+  background-color: #ffffff;
 }
 
 .data-table-container {

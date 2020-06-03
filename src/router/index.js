@@ -2,11 +2,14 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
 import Masterdoctor from '../views/Masterdoctor.vue'
-import Mastertindakan from '../views/Mastertindakan.vue'
 import Masterlab from '../views/Masterlab.vue'
+import Mastertindakan from '../views/Mastertindakan.vue'
+import Masterronsen from '../views/Masterronsen.vue'
+import Masterobat from '../views/Masterobat.vue'
 import Masterperusahaan from '../views/Masterperusahaan.vue'
 import Masterasuransi from '../views/Masterasuransi.vue'
-import Masterronsen from '../views/Masterronsen.vue'
+import Masterdistributor from '../views/Masterdistributor.vue'
+import Masteruser from '../views/Masteruser.vue'
 
 Vue.use(VueRouter)
 
@@ -37,6 +40,11 @@ const routes = [
     component: Masterronsen
   },
   {
+    path: '/masterobat',
+    name: 'Masterobat',
+    component: Masterobat
+  },
+  {
     path: '/masterperusahaan',
     name: 'Masterperusahaan',
     component: Masterperusahaan
@@ -45,6 +53,16 @@ const routes = [
     path: '/masterasuransi',
     name: 'Masterasuransi',
     component: Masterasuransi
+  },
+  {
+    path: '/masterdistributor',
+    name: 'Masterdistributor',
+    component: Masterdistributor
+  },
+  {
+    path: '/masteruser',
+    name: 'Masteruser',
+    component: Masteruser
   }
 ]
 

@@ -34,6 +34,11 @@
             <v-list-item-title>Master Ronsen</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item to="/masterobat">
+          <v-list-item-content>
+            <v-list-item-title>Master Obat</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item to="/masterperusahaan">
           <v-list-item-content>
             <v-list-item-title>Master Perusahaan</v-list-item-title>
@@ -42,6 +47,16 @@
         <v-list-item to="/masterasuransi">
           <v-list-item-content>
             <v-list-item-title>Master Asuransi</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/masterdistributor">
+          <v-list-item-content>
+            <v-list-item-title>Master Distributor</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/masteruser">
+          <v-list-item-content>
+            <v-list-item-title>Master User</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-group>

@@ -6,7 +6,40 @@
         title: 'Master Asuransi'
     }"
     ></Banner>
-    <div class="data-table-container">
+    <div class="loading" v-if="masterAsuransi.data.length === 0">
+      <img src="../assets/loading.gif" />
+    </div>
+    <div class="data-table-container" v-else>
+      <Formdialog
+        v-bind:dialogDetail="{
+        formInput,
+        btnTitle: 'Create Asuransi',
+        btnIcon: 'mdi-umbrella'
+      }"
+      >
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Nama Asuransi"
+            v-model="formInput.masterAsuransiNama"
+            :rules="validationRules.masterAsuransiNama"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field label="Alamat Asuransi" v-model="formInput.masterAsuransiAlamat"></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field label="Telpon Asuransi" v-model="formInput.masterAsuransiTelpon"></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Harga Asuransi"
+            v-model="formInput.masterAsuransiHarga"
+            :rules="validationRules.masterAsuransiHarga"
+            required
+          ></v-text-field>
+        </v-col>
+      </Formdialog>
       <Datatable
         v-bind:dataTableDetail="{
           data: masterAsuransi.data,
@@ -21,14 +54,30 @@
 <script>
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
+import Formdialog from "../components/Formdialog";
 export default {
   name: "Masterasuransi",
   components: {
     Banner,
-    Datatable
+    Datatable,
+    Formdialog
   },
   created() {
     this.$store.dispatch("getMasterAsuransi");
+  },
+  data() {
+    return {
+      validationRules: {
+        masterAsuransiNama: [v => !!v || "Nama Asuransi is required"],
+        masterAsuransiHarga: [v => !!v || "Harga Asuransi is required"]
+      },
+      formInput: {
+        masterAsuransiNama: "",
+        masterAsuransiAlamat: "",
+        masterAsuransiTelpon: "( 021 ) ",
+        masterAsuransiHarga: ""
+      }
+    };
   },
   computed: {
     masterAsuransi() {
@@ -81,6 +130,13 @@ export default {
 <style scoped>
 .master-asuransi {
   background-color: #f5f5f5;
+}
+
+.loading {
+  text-align: center;
+  height: 100%;
+  padding-top: 100px;
+  background-color: #ffffff;
 }
 
 .data-table-container {
