@@ -10,12 +10,28 @@
       <img src="../assets/loading.gif" />
     </div>
     <div class="data-table-container" v-else>
+      <v-alert
+        type="success"
+        class="success-create-alert"
+        v-show="successCreateAlert"
+      >Create Perusahaan Success</v-alert>
+      <v-alert
+        type="success"
+        class="success-create-alert"
+        v-show="successEditAlert"
+      >Edit Perusahaan Success</v-alert>
+      <v-alert
+        type="success"
+        class="success-create-alert"
+        v-show="successDeleteAlert"
+      >Delete Perusahaan Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
         formInput,
         btnTitle: 'Create Perusahaan',
         btnIcon: 'mdi-home-modern'
       }"
+        v-on:createPerusahaanSuccess="resetFormInput"
       >
         <v-col cols="6" sm="6" md="6">
           <v-text-field
@@ -44,9 +60,36 @@
         v-bind:dataTableDetail="{
         data: masterPerusahaan.data,
         header: masterPerusahaan.header,
-        cardTitle: 'Table Perusahaan'
+        cardTitle: 'Table Perusahaan',
+        editDetail: editForm
       }"
-      ></Datatable>
+        v-on:inputFormEdit="inputEditPerusahaan"
+        v-on:editPerusahaanSuccess="successEdit"
+        v-on:deletePerusahaanSuccess="successDelete"
+      >
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Nama Perusahaan"
+            v-model="editForm.masterPerusahaanNama"
+            :rules="validatonRules.masterPerusahaanNama"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field label="Alamat Perusahaan" v-model="editForm.masterPerusahaanAlamat"></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field label="Telepon Perusahaan" v-model="editForm.masterPerusahaanTelpon"></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Harga Perusahaan"
+            v-model="editForm.masterPerusahaanHarga"
+            :rules="validatonRules.masterPerusahaanHarga"
+            required
+          ></v-text-field>
+        </v-col>
+      </Datatable>
     </div>
   </div>
 </template>
@@ -76,7 +119,17 @@ export default {
         masterPerusahaanAlamat: "",
         masterPerusahaanTelpon: "( 021 ) ",
         masterPerusahaanHarga: ""
-      }
+      },
+      successCreateAlert: false,
+      editForm: {
+        masterPerusahaanNama: "",
+        masterPerusahaanAlamat: "",
+        masterPerusahaanTelpon: "",
+        masterPerusahaanHarga: "",
+        originalID: ""
+      },
+      successEditAlert: false,
+      successDeleteAlert: false
     };
   },
   computed: {
@@ -85,32 +138,37 @@ export default {
       if (this.$store.state.masterPerusahaan.length > 0) {
         this.$store.state.masterPerusahaan.forEach((perusahaan, index) => {
           Object.keys(perusahaan).forEach(key => {
-            let objectHeader = {};
-            if (
-              key === "master_perusahaan_nama" ||
-              key === "master_perusahaan_alamat" ||
-              key === "master_perusahaan_harga" ||
-              key === "master_perusahaan_telpon"
-            ) {
-              const newKey = key
-                .slice(7)
-                .replace("_", " ")
-                .split("");
-              newKey[0] = newKey[0].toUpperCase();
-              newKey[11] = newKey[11].toUpperCase();
-              const headerKey = newKey.join("");
-              if (index === 0 && key === "master_perusahaan_nama") {
-                objectHeader["text"] = headerKey;
-                objectHeader["value"] = key;
-                objectHeader["align"] = "start";
-                header.push(objectHeader);
-              } else if (index === 0 && key !== "master_perusahaan_nama") {
-                objectHeader["text"] = headerKey;
-                objectHeader["value"] = key;
-                header.push(objectHeader);
+            if (index === 0) {
+              let objectHeader = {};
+              if (
+                key === "master_perusahaan_nama" ||
+                key === "master_perusahaan_alamat" ||
+                key === "master_perusahaan_harga" ||
+                key === "master_perusahaan_telpon"
+              ) {
+                const newKey = key
+                  .slice(7)
+                  .replace("_", " ")
+                  .split("");
+                newKey[0] = newKey[0].toUpperCase();
+                newKey[11] = newKey[11].toUpperCase();
+                const headerKey = newKey.join("");
+                if (key === "master_perusahaan_nama") {
+                  objectHeader["text"] = headerKey;
+                  objectHeader["value"] = key;
+                  objectHeader["align"] = "start";
+                  header.push(objectHeader);
+                } else if (key !== "master_perusahaan_nama") {
+                  objectHeader["text"] = headerKey;
+                  objectHeader["value"] = key;
+                  header.push(objectHeader);
+                }
               }
             }
           });
+          if (index === 0) {
+            header.push({ text: "Actions", value: "actions", sortable: false });
+          }
         });
         return {
           data: this.$store.state.masterPerusahaan,
@@ -122,6 +180,39 @@ export default {
           header
         };
       }
+    }
+  },
+  methods: {
+    resetFormInput() {
+      this.formInput.masterPerusahaanNama = "";
+      this.formInput.masterPerusahaanAlamat = "";
+      this.formInput.masterPerusahaanTelpon = "( 021 ) ";
+      this.formInput.masterPerusahaanHarga = "";
+      this.successCreateAlert = true;
+      setTimeout(() => {
+        this.successCreateAlert = false;
+      }, 3000);
+    },
+    inputEditPerusahaan(perusahaan) {
+      this.editForm.masterPerusahaanNama = perusahaan.master_perusahaan_nama;
+      this.editForm.masterPerusahaanAlamat =
+        perusahaan.master_perusahaan_alamat;
+      this.editForm.masterPerusahaanTelpon =
+        perusahaan.master_perusahaan_telpon;
+      this.editForm.masterPerusahaanHarga = perusahaan.master_perusahaan_harga;
+      this.editForm.originalID = perusahaan.master_perusahaan_ID;
+    },
+    successEdit() {
+      this.successEditAlert = true;
+      setTimeout(() => {
+        this.successEditAlert = false;
+      }, 3000);
+    },
+    successDelete() {
+      this.successDeleteAlert = true;
+      setTimeout(() => {
+        this.successDeleteAlert = false;
+      }, 3000);
     }
   }
 };
@@ -141,5 +232,10 @@ export default {
 
 .data-table-container {
   padding: 50px;
+}
+
+.success-create-alert {
+  font-weight: bold;
+  font-size: 17.5px;
 }
 </style>

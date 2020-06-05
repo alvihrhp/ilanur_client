@@ -10,12 +10,28 @@
       <img src="../assets/loading.gif" />
     </div>
     <div class="data-table-container" v-else>
+      <v-alert
+        type="success"
+        class="success-create-alert"
+        v-show="successCreateAlert"
+      >Create User Success</v-alert>
+      <v-alert
+        type="success"
+        class="success-create-alert"
+        v-show="successEditAlert"
+      >Edit User Success</v-alert>
+      <v-alert
+        type="success"
+        class="success-create-alert"
+        v-show="successDeleteAlert"
+      >Delete User Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
         formInput,
         btnTitle: 'Create User',
         btnIcon: 'mdi-account'
       }"
+        v-on:createUserSuccess="resetFormInput"
       >
         <v-col cols="6" sm="6" md="6">
           <v-text-field
@@ -73,9 +89,65 @@
         v-bind:dataTableDetail="{
           cardTitle: 'Table User',
           data: masterUser.data,
-          header: masterUser.header
+          header: masterUser.header,
+          editDetail: editForm
       }"
-      ></Datatable>
+        v-on:inputFormEdit="inputEditUser"
+        v-on:editUserSuccess="successEdit"
+        v-on:deleteUserSuccess="successDelete"
+      >
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Username"
+            v-model="editForm.pUsername"
+            :rules="validationRules.pUsername"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Password"
+            v-model="editForm.pPassword"
+            :rules="validationRules.pPassword"
+            type="password"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="First Name"
+            v-model="editForm.pFirstName"
+            :rules="validationRules.pFirstName"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-text-field
+            label="Last Name"
+            v-model="editForm.pLastName"
+            :rules="validationRules.pLastName"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-select
+            label="Role"
+            v-model="editForm.role"
+            :rules="validationRules.role"
+            :items="selectRole"
+            required
+          ></v-select>
+        </v-col>
+        <v-col cols="6" sm="6" md="6">
+          <v-select
+            label="Location"
+            v-model="editForm.location"
+            :rules="validationRules.location"
+            :items="selectLocation"
+            required
+          ></v-select>
+        </v-col>
+      </Datatable>
     </div>
   </div>
 </template>
@@ -112,8 +184,29 @@ export default {
         role: null,
         location: null
       },
-      selectRole: ["admin", "gudang", "farmasi", "resepsionis", "paramedis"],
-      selectLocation: ["PUSAT"]
+      selectRole: [
+        "admin",
+        "gudang",
+        "farmasi",
+        "resepsionis",
+        "paramedis",
+        "laboratorium",
+        "radiologis"
+      ],
+      selectLocation: ["PUSAT"],
+      successCreateAlert: false,
+      editForm: {
+        pUsername: "",
+        pPassword: "",
+        pFirstName: "",
+        pLastName: "",
+        role: null,
+        location: null,
+        originalID: "",
+        originalUsername: ""
+      },
+      successEditAlert: false,
+      successDeleteAlert: false
     };
   },
   computed: {
@@ -122,16 +215,16 @@ export default {
       if (this.$store.state.masterUser.length > 0) {
         this.$store.state.masterUser.forEach((user, index) => {
           Object.keys(user).forEach(key => {
-            let objectHeader = {};
-            if (
-              key === "pusername" ||
-              key === "pfirstname" ||
-              key === "plastname" ||
-              key === "role"
-            ) {
-              let newKey;
-              let headerKey;
-              if (index === 0) {
+            if (index === 0) {
+              let objectHeader = {};
+              if (
+                key === "pusername" ||
+                key === "pfirstname" ||
+                key === "plastname" ||
+                key === "role"
+              ) {
+                let newKey;
+                let headerKey;
                 if (key[0] === "p") {
                   newKey = key.slice(1).split("");
                   const nIndex = newKey.indexOf("n");
@@ -158,6 +251,9 @@ export default {
               }
             }
           });
+          if (index === 0) {
+            header.push({ text: "Actions", value: "actions", sortable: false });
+          }
         });
         return {
           data: this.$store.state.masterUser,
@@ -169,6 +265,42 @@ export default {
           header
         };
       }
+    }
+  },
+  methods: {
+    resetFormInput() {
+      this.formInput.pUsername = "";
+      this.formInput.pPassword = "";
+      this.formInput.pFirstName = "";
+      this.formInput.pLastName = "";
+      this.formInput.role = null;
+      this.formInput.location = null;
+      this.successCreateAlert = true;
+      setTimeout(() => {
+        this.successCreateAlert = false;
+      }, 3000);
+    },
+    inputEditUser(user) {
+      this.editForm.pUsername = user.pusername;
+      this.editForm.pFirstName = user.pfirstname;
+      this.editForm.pLastName = user.plastname;
+      this.editForm.role = user.role;
+      this.editForm.location = user.location;
+      this.editForm.originalID = user.user_ID;
+      this.editForm.originalUsername = user.pusername;
+    },
+    successEdit() {
+      this.successEditAlert = true;
+      this.editForm.pPassword = "";
+      setTimeout(() => {
+        this.successEditAlert = false;
+      }, 3000);
+    },
+    successDelete() {
+      this.successDeleteAlert = true;
+      setTimeout(() => {
+        this.successDeleteAlert = false;
+      }, 3000);
     }
   }
 };
@@ -188,5 +320,10 @@ export default {
 
 .data-table-container {
   padding: 50px;
+}
+
+.success-create-alert {
+  font-weight: bold;
+  font-size: 17.5px;
 }
 </style>

@@ -43,117 +43,22 @@ export default {
   },
   methods: {
     saveButton() {
-      if (this.btnTitle === "Create Dokter") {
-        this.$store
-          .dispatch("createMasterDoctor", this.formInput)
-          .then(() => {
-            this.dialog = false;
-            this.iserror = false;
-            this.errormessage = " ";
-          })
-          .catch(error => {
-            this.isError = true;
-            this.errorMessage = { error }.error.response.data.messages.error;
-          });
-      } else if (this.btnTitle === "Create Tindakan") {
-        this.$store
-          .dispatch("createMasterTindakan", this.formInput)
-          .then(() => {
-            this.dialog = false;
-            this.iserror = false;
-            this.errormessage = " ";
-          })
-          .catch(error => {
-            this.isError = true;
-            this.errorMessage = { error }.error.response.data.messages.error;
-          });
-      } else if (this.btnTitle === "Create Lab") {
-        this.$store
-          .dispatch("createMasterLab", this.formInput)
-          .then(() => {
-            this.dialog = false;
-            this.iserror = false;
-            this.errormessage = " ";
-          })
-          .catch(error => {
-            this.isError = true;
-            this.errorMessage = { error }.error.response.data.messages.error;
-          });
-      } else if (this.btnTitle === "Create Ronsen") {
-        this.$store
-          .dispatch("createMasterRonsen", this.formInput)
-          .then(() => {
-            this.dialog = false;
-            this.iserror = false;
-            this.errormessage = " ";
-          })
-          .catch(error => {
-            this.isError = true;
-            this.errorMessage = { error }.error.response.data.messages.error;
-          });
-      } else if (this.btnTitle === "Create Obat") {
-        this.$store
-          .dispatch("createMasterObat", this.formInput)
-          .then(() => {
-            this.dialog = false;
-            this.iserror = false;
-            this.errormessage = " ";
-          })
-          .catch(error => {
-            console.log({ error });
-            this.isError = true;
-            this.errorMessage = { error }.error.response.data.messages.error;
-          });
-      } else if (this.btnTitle === "Create Perusahaan") {
-        this.$store
-          .dispatch("createMasterPerusahaan", this.formInput)
-          .then(() => {
-            this.dialog = false;
-            this.iserror = false;
-            this.errormessage = " ";
-          })
-          .catch(error => {
-            this.isError = true;
-            this.errorMessage = { error }.error.response.data.messages.error;
-          });
-      } else if (this.btnTitle === "Create Asuransi") {
-        this.$store
-          .dispatch("createMasterAsuransi", this.formInput)
-          .then(() => {
-            this.dialog = false;
-            this.iserror = false;
-            this.errormessage = " ";
-          })
-          .catch(error => {
-            this.isError = true;
-            this.errorMessage = { error }.error.response.data.messages.error;
-          });
-      } else if (this.btnTitle === "Create Distributor") {
-        this.$store
-          .dispatch("createMasterDistributor", this.formInput)
-          .then(() => {
-            this.dialog = false;
-            this.iserror = false;
-            this.errormessage = " ";
-          })
-          .catch(error => {
-            this.isError = true;
-            this.errorMessage = { error }.error.response.data.messages.error;
-          });
-      } else if (this.btnTitle === "Create User") {
-        this.$store
-          .dispatch("createMasterUser", this.formInput)
-          .then(() => {
-            // this.dialog = false;
-            // this.iserror = false;
-            // this.errormessage = " ";
-          })
-          .catch(error => {
-            console.log({ error });
-            this.isError = true;
-            this.errorMessage = { error }.error.response.data.messages.error;
-          });
-      }
+      const master = this.btnTitle.slice(7);
+      this.$store
+        .dispatch(`createMaster${master}`, this.formInput)
+        .then(() => {
+          this.dialog = false;
+          this.iserror = false;
+          this.errormessage = " ";
+          this.$emit(`create${master}Success`);
+        })
+        .catch(error => {
+          this.isError = true;
+          const errorKey = Object.keys(
+            { error }.error.response.data.messages
+          )[0];
+          this.errorMessage = { error }.error.response.data.messages[errorKey];
+        });
     },
     scrollToEnd() {
       let container = this.$el.querySelector("#card-container");

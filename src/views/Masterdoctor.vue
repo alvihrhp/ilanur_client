@@ -10,12 +10,28 @@
       <img src="../assets/loading.gif" />
     </div>
     <div class="data-table-container" v-else>
+      <v-alert
+        type="success"
+        class="success-create-alert"
+        v-show="successCreateAlert"
+      >Create Doctor Success</v-alert>
+      <v-alert
+        type="success"
+        class="success-create-alert"
+        v-show="successEditAlert"
+      >Edit Doctor Success</v-alert>
+      <v-alert
+        type="success"
+        class="success-create-alert"
+        v-show="successDeleteAlert"
+      >Delete Doctor Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
         formInput,
         btnIcon: 'mdi-stethoscope',
-        btnTitle: 'Create Dokter',
+        btnTitle: 'Create Doctor',
       }"
+        v-on:createDoctorSuccess="resetFormInput"
       >
         <v-col cols="6" sm="6" md="6">
           <v-text-field
@@ -128,8 +144,69 @@
         data: masterDoctor.data,
         header: masterDoctor.header,
         cardTitle: 'Table Doctor',
+        editDetail: editForm
       }"
-      ></Datatable>
+        v-on:inputFormEdit="inputEditDokter"
+        v-on:editDoctorSuccess="successEdit"
+        v-on:deleteDoctorSuccess="successDelete"
+      >
+        <v-col cols="6" md="6" sm="6">
+          <v-text-field
+            label="Nama Dokter"
+            v-model="editForm.namaDokter"
+            :rules="validationForm.namaDokter"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" md="6" sm="6">
+          <v-text-field label="Gelar Depan Dokter" v-model="editForm.gelarDepanDokter"></v-text-field>
+        </v-col>
+        <v-col cols="6" md="6" sm="6">
+          <v-text-field label="Gelar Belakang Dokter" v-model="editForm.gelarBelakangDokter"></v-text-field>
+        </v-col>
+        <v-col cols="6" md="6" sm="6">
+          <v-select
+            label="Kelamin Dokter"
+            v-model="editForm.jenisKelaminDokter"
+            :rules="validationForm.jenisKelaminDokter"
+            :items="selectFormKelamin"
+            required
+          ></v-select>
+        </v-col>
+        <v-col cols="6" md="6" sm="6">
+          <v-text-field
+            label="Alamat Dokter"
+            v-model="editForm.alamatDokter"
+            :rules="validationForm.alamatDokter"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" md="6" sm="6">
+          <v-text-field label="No.Telp Dokter" v-model="editForm.noTelpRumahDokter"></v-text-field>
+        </v-col>
+        <v-col cols="6" md="6" sm="6">
+          <v-text-field label="No.Hp Dokter" v-model="editForm.noHpDokter"></v-text-field>
+        </v-col>
+        <v-col cols="6" md="6" sm="6">
+          <v-text-field label="NPWP Dokter" v-model="editForm.npwpDokter"></v-text-field>
+        </v-col>
+        <v-col cols="6" md="6" sm="6">
+          <v-text-field
+            label="Status Dokter"
+            v-model="editForm.statusDokter"
+            :rules="validationForm.statusDokter"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="6" md="6" sm="6">
+          <v-text-field
+            label="Pemeriksaan Dokter"
+            v-model="editForm.pemeriksaanDokter"
+            :rules="validationForm.pemeriksaanDokter"
+            required
+          ></v-text-field>
+        </v-col>
+      </Datatable>
     </div>
   </div>
 </template>
@@ -164,7 +241,6 @@ export default {
         dokterOnCall: [v => !!v || "Harga On Call is required"]
       },
       formInput: {
-        kodeDokter: "",
         namaDokter: "",
         gelarDepanDokter: "",
         gelarBelakangDokter: "",
@@ -182,7 +258,24 @@ export default {
         dokterOnCall: ""
       },
       selectFormKelamin: ["Pria", "Wanita"],
-      selectFormTypeHarga: ["UMUM", "BPJS", "ASURANSI/PERUSAHAAN"]
+      selectFormTypeHarga: ["UMUM", "BPJS", "ASURANSI/PERUSAHAAN"],
+      successCreateAlert: false,
+      editForm: {
+        kodeDokter: "",
+        namaDokter: "",
+        gelarDepanDokter: "",
+        gelarBelakangDokter: "",
+        jenisKelaminDokter: null,
+        alamatDokter: "",
+        noTelpRumahDokter: "",
+        noHpDokter: "",
+        npwpDokter: "",
+        statusDokter: "",
+        pemeriksaanDokter: "",
+        originalID: ""
+      },
+      successEditAlert: false,
+      successDeleteAlert: false
     };
   },
   computed: {
@@ -192,30 +285,35 @@ export default {
         this.$store.state.masterDoctor.forEach((doctor, index) => {
           const keys = Object.keys(doctor);
           keys.forEach(key => {
-            if (
-              key === "doctor_kode" ||
-              key === "doctor_nama" ||
-              key === "doctor_phone" ||
-              key === "doctor_hp" ||
-              key === "doctor_pemeriksaan"
-            ) {
-              let objectHeader = {};
-              const keyArray = key.replace("_", " ").split("");
-              keyArray[0] = keyArray[0].toUpperCase();
-              keyArray[7] = keyArray[7].toUpperCase();
-              const keyStr = keyArray.join("");
-              if (index === 0 && key === "doctor_kode") {
-                objectHeader["text"] = keyStr;
-                objectHeader["value"] = key;
-                objectHeader["align"] = "start";
-                header.push(objectHeader);
-              } else if (index === 0 && key !== "doctor_kode") {
-                objectHeader["text"] = keyStr;
-                objectHeader["value"] = key;
-                header.push(objectHeader);
+            if (index === 0) {
+              if (
+                key === "doctor_kode" ||
+                key === "doctor_nama" ||
+                key === "doctor_phone" ||
+                key === "doctor_hp" ||
+                key === "doctor_pemeriksaan"
+              ) {
+                let objectHeader = {};
+                const keyArray = key.replace("_", " ").split("");
+                keyArray[0] = keyArray[0].toUpperCase();
+                keyArray[7] = keyArray[7].toUpperCase();
+                const keyStr = keyArray.join("");
+                if (key === "doctor_kode") {
+                  objectHeader["text"] = keyStr;
+                  objectHeader["value"] = key;
+                  objectHeader["align"] = "start";
+                  header.push(objectHeader);
+                } else if (key !== "doctor_kode") {
+                  objectHeader["text"] = keyStr;
+                  objectHeader["value"] = key;
+                  header.push(objectHeader);
+                }
               }
             }
           });
+          if (index === 0) {
+            header.push({ text: "Actions", value: "actions", sortable: false });
+          }
         });
         return {
           data: this.$store.state.masterDoctor,
@@ -227,6 +325,55 @@ export default {
           header
         };
       }
+    }
+  },
+  methods: {
+    resetFormInput() {
+      this.formInput.kodeDokter = "";
+      this.formInput.namaDokter = "";
+      this.formInput.gelarDepanDokter = "";
+      this.formInput.gelarBelakangDokter = "";
+      this.formInput.jenisKelaminDokter = null;
+      this.formInput.alamatDokter = "";
+      this.formInput.noTelpRumahDokter = "";
+      this.formInput.noHpDokter = "";
+      this.formInput.npwpDokter = "";
+      this.formInput.statusDokter = "";
+      this.formInput.pemeriksaanDokter = "";
+      this.formInput.typeHarga = null;
+      this.formInput.hargaJasaDokter = "0";
+      this.formInput.pembagianDokter = "";
+      this.formInput.dokterOnVist = "";
+      this.formInput.dokterOnCall = "";
+      this.successCreateAlert = true;
+      setTimeout(() => {
+        this.successCreateAlert = false;
+      }, 3000);
+    },
+    inputEditDokter(dokter) {
+      this.editForm.namaDokter = dokter.doctor_nama;
+      this.editForm.gelarDepanDokter = dokter.doctor_glr_dpn;
+      this.editForm.gelarBelakangDokter = dokter.doctor_glr_blk;
+      this.editForm.jenisKelaminDokter = dokter.doctor_kelamin;
+      this.editForm.alamatDokter = dokter.doctor_alamat;
+      this.editForm.noTelpRumahDokter = dokter.doctor_phone;
+      this.editForm.noHpDokter = dokter.doctor_hp;
+      this.editForm.npwpDokter = dokter.doctor_npwp;
+      this.editForm.statusDokter = dokter.doctor_status;
+      this.editForm.pemeriksaanDokter = dokter.doctor_pemeriksaan;
+      this.editForm.originalID = dokter.doctor_kode;
+    },
+    successEdit() {
+      this.successEditAlert = true;
+      setTimeout(() => {
+        this.successEditAlert = false;
+      }, 3000);
+    },
+    successDelete() {
+      this.successDeleteAlert = true;
+      setTimeout(() => {
+        this.successDeleteAlert = false;
+      }, 3000);
     }
   }
 };
@@ -246,5 +393,10 @@ export default {
 
 .data-table-container {
   padding: 50px;
+}
+
+.success-create-alert {
+  font-weight: bold;
+  font-size: 17.5px;
 }
 </style>

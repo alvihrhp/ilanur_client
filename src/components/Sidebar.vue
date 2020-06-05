@@ -1,7 +1,7 @@
 <template>
-  <v-navigation-drawer app color="success">
+  <v-navigation-drawer app color="#ee9632">
     <v-list>
-      <v-list-item color="success" to="/dashboard">
+      <v-list-item color="#ee9632" to="/dashboard">
         <v-list-item-icon>
           <v-icon color="white">mdi-home</v-icon>
         </v-list-item-icon>
