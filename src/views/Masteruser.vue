@@ -14,16 +14,19 @@
         type="success"
         class="success-create-alert"
         v-show="successCreateAlert"
+        v-animate-css="'slideInDown'"
       >Create User Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successEditAlert"
+        v-animate-css="'slideInDown'"
       >Edit User Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successDeleteAlert"
+        v-animate-css="'slideInDown'"
       >Delete User Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
@@ -90,7 +93,9 @@
           cardTitle: 'Table User',
           data: masterUser.data,
           header: masterUser.header,
-          editDetail: editForm
+          editDetail: editForm,
+          buttonEdit: true,
+          buttonDelete: true
       }"
         v-on:inputFormEdit="inputEditUser"
         v-on:editUserSuccess="successEdit"

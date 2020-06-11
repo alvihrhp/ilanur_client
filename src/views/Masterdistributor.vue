@@ -14,16 +14,19 @@
         type="success"
         class="success-create-alert"
         v-show="successCreateAlert"
+        v-animate-css="'slideInDown'"
       >Create Distributor Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successEditAlert"
+        v-animate-css="'slideInDown'"
       >Edit Distributor Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successDeleteAlert"
+        v-animate-css="'slideInDown'"
       >Delete Distributor Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
@@ -31,7 +34,7 @@
         btnTitle: 'Create Distributor',
         btnIcon: 'mdi-truck'
       }"
-        v-on:createMasterDistributor="resetFormInput"
+        v-on:createDistributorSuccess="resetFormInput"
       >
         <v-col cols="6" sm="6" md="6">
           <v-text-field
@@ -63,7 +66,9 @@
           cardTitle: 'Table Distributor',
           data: masterDistributor.data,
           header: masterDistributor.header,
-          editDetail: editForm
+          editDetail: editForm,
+          buttonEdit: true,
+          buttonDelete: true
       }"
         v-on:inputFormEdit="inputEditDistributor"
         v-on:editDistributorSuccess="successEdit"

@@ -14,16 +14,19 @@
         type="success"
         class="success-create-alert"
         v-show="successCreateAlert"
+        v-animate-css="'slideInDown'"
       >Create Ronsen Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successEditAlert"
+        v-animate-css="'slideInDown'"
       >Edit Ronsen Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successDeleteAlert"
+        v-animate-css="'slideInDown'"
       >Delete Ronsen Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
@@ -127,35 +130,12 @@ export default {
     masterRonsen() {
       let header = [];
       if (this.$store.state.masterRonsen.length > 0) {
-        this.$store.state.masterRonsen.forEach((ronsen, index) => {
-          Object.keys(ronsen).forEach(key => {
-            if (index === 0) {
-              let objectHeader = {};
-              const newKey = key.replace("_", " ").split("");
-              newKey[0] = newKey[0].toUpperCase();
-              let headerKey;
-              if (key === "ronsen_kode") {
-                newKey[7] = newKey[7].toUpperCase();
-                headerKey = newKey.join("");
-                objectHeader["text"] = headerKey;
-                objectHeader["value"] = key;
-                objectHeader["align"] = "start";
-                header.push(objectHeader);
-              } else if (key !== "ronsen_kode") {
-                newKey[7] = newKey[7].toUpperCase();
-                newKey[11] = " ";
-                newKey[12] = newKey[12].toUpperCase();
-                headerKey = newKey.join("");
-                objectHeader["text"] = headerKey;
-                objectHeader["value"] = key;
-                header.push(objectHeader);
-              }
-            }
-          });
-          if (index === 0) {
-            header.push({ text: "Actions", value: "actions", sortable: false });
-          }
-        });
+        header = [
+          { text: "Ronsen Kode", value: "ronsen_kode", align: "start" },
+          { text: "Ronsen Nama Pemeriksaan", value: "ronsen_nama_pemeriksaan" },
+          { text: "Actions", value: "actions", sortable: false },
+          { text: "", value: "data-table-expand" }
+        ];
         return {
           data: this.$store.state.masterRonsen,
           header

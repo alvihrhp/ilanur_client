@@ -14,16 +14,19 @@
         type="success"
         class="success-create-alert"
         v-show="successCreateAlert"
+        v-animate-css="'slideInDown'"
       >Create Tindakan Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successEditAlert"
+        v-animate-css="'slideInDown'"
       >Edit Tindakan Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successDeleteAlert"
+        v-animate-css="'slideInDown'"
       >Delete Tindakan Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
@@ -147,31 +150,12 @@ export default {
     masterTindakan() {
       let header = [];
       if (this.$store.state.masterTindakan.length > 0) {
-        this.$store.state.masterTindakan.forEach((tindakan, index) => {
-          Object.keys(tindakan).forEach(key => {
-            if (index === 0) {
-              let objectHeader = {};
-              const newKey = key.replace("_", " ").split("");
-              newKey[0] = newKey[0].toUpperCase();
-              newKey[9] = newKey[9].toUpperCase();
-              const headerKey = newKey.join("");
-
-              if (key === "tindakan_kode") {
-                objectHeader["text"] = headerKey;
-                objectHeader["value"] = key;
-                objectHeader["align"] = "start";
-                header.push(objectHeader);
-              } else if (key !== "tindakan_kode") {
-                objectHeader["text"] = headerKey;
-                objectHeader["value"] = key;
-                header.push(objectHeader);
-              }
-            }
-          });
-          if (index === 0) {
-            header.push({ text: "Actions", value: "actions", sortable: false });
-          }
-        });
+        header = [
+          { text: "Tindakan Kode", value: "tindakan_kode", align: "start" },
+          { text: "Tindakan Nama", value: "tindakan_nama" },
+          { text: "Actions", value: "actions", sortable: false },
+          { text: "", value: "data-table-expand" }
+        ];
         return {
           data: this.$store.state.masterTindakan,
           header

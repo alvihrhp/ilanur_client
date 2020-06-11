@@ -14,16 +14,19 @@
         type="success"
         class="success-create-alert"
         v-show="successCreateAlert"
+        v-animate-css="'slideInDown'"
       >Create Perusahaan Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successEditAlert"
+        v-animate-css="'slideInDown'"
       >Edit Perusahaan Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successDeleteAlert"
+        v-animate-css="'slideInDown'"
       >Delete Perusahaan Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
@@ -61,7 +64,9 @@
         data: masterPerusahaan.data,
         header: masterPerusahaan.header,
         cardTitle: 'Table Perusahaan',
-        editDetail: editForm
+        editDetail: editForm,
+        buttonEdit: true,
+        buttonDelete: true
       }"
         v-on:inputFormEdit="inputEditPerusahaan"
         v-on:editPerusahaanSuccess="successEdit"

@@ -14,16 +14,19 @@
         type="success"
         class="success-create-alert"
         v-show="successCreateAlert"
+        v-animate-css="'slideInDown'"
       >Create Obat Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successEditAlert"
+        v-animate-css="'slideInDown'"
       >Edit Obat Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successDeleteAlert"
+        v-animate-css="'slideInDown'"
       >Delete Obat Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
@@ -241,36 +244,13 @@ export default {
     masterObat() {
       let header = [];
       if (this.$store.state.masterObat.length > 0) {
-        this.$store.state.masterObat.forEach((obat, index) => {
-          Object.keys(obat).forEach(key => {
-            if (index === 0) {
-              let objectHeader = {};
-              if (
-                key === "obat_kode" ||
-                key === "obat_nama" ||
-                key === "obat_quantity"
-              ) {
-                const newKey = key.replace("_", " ").split("");
-                newKey[0] = newKey[0].toUpperCase();
-                newKey[5] = newKey[5].toUpperCase();
-                const headerKey = newKey.join("");
-                if (key === "obat_kode") {
-                  objectHeader["text"] = headerKey;
-                  objectHeader["value"] = key;
-                  objectHeader["align"] = "start";
-                  header.push(objectHeader);
-                } else if (key !== "obat_kode") {
-                  objectHeader["text"] = headerKey;
-                  objectHeader["value"] = key;
-                  header.push(objectHeader);
-                }
-              }
-            }
-          });
-          if (index === 0) {
-            header.push({ text: "Actions", value: "actions", sortable: false });
-          }
-        });
+        header = [
+          { text: "Obat Kode", value: "obat_kode", align: "start" },
+          { text: "Obat Nama", value: "obat_nama" },
+          { text: "Obat Quantity", value: "obat_quantity" },
+          { text: "Actions", value: "actions", sortable: false },
+          { text: "", value: "data-table-expand" }
+        ];
         return {
           data: this.$store.state.masterObat,
           header

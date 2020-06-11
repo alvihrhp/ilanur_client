@@ -4,19 +4,26 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
-const baseURL = 'http://localhost:8080'
+// const baseURL = 'http://hisapi.fsolteam.com/public'
+const baseURL = "http://localhost:8081"
 
 export default new Vuex.Store({
   state: {
     masterDoctor: [],
+    hargaDoctor: [],
     masterPerusahaan: [],
     masterAsuransi: [],
     masterTindakan: [],
+    hargaTindakan: [],
     masterLab: [],
+    hargaLab: [],
     masterRonsen: [],
+    hargaRonsen: [],
     masterObat: [],
+    hargaObat: [],
     masterDistributor: [],
-    masterUser: []
+    masterUser: [],
+    masterType: []
   },
   mutations: {
     FILL_MASTER_DOCTOR(state, data) {
@@ -38,6 +45,20 @@ export default new Vuex.Store({
         return doctor.doctor_kode != data.doctor_kode;
       })
     },
+    FILL_HARGA_DOCTOR(state, data) {
+      state.hargaDoctor = data;
+    },
+    INSERT_HARGA_DOCTOR(state, data) {
+      state.hargaDoctor.push(data);
+    },
+    EDIT_HARGA_DOCTOR(state, data) {
+      state.hargaDoctor = state.hargaDoctor.map(price => {
+        if (price.id === data.id) {
+          return data;
+        }
+        return price;
+      })
+    },
     FILL_MASTER_TINDAKAN(state, data) {
       state.masterTindakan = data;
     },
@@ -55,6 +76,20 @@ export default new Vuex.Store({
     DELETE_MASTER_TINDAKAN(state, data) {
       state.masterTindakan = state.masterTindakan.filter(tindakan => {
         return tindakan.tindakan_kode != data.tindakan_kode;
+      })
+    },
+    FILL_HARGA_TINDAKAN(state, data) {
+      state.hargaTindakan = data;
+    },
+    INSERT_HARGA_TINDAKAN(state, data) {
+      state.hargaTindakan.push(data);
+    },
+    EDIT_HARGA_TINDAKAN(state, data) {
+      state.hargaTindakan = state.hargaTindakan.map(price => {
+        if (data.id === price.id) {
+          return data;
+        }
+        return price;
       })
     },
     FILL_MASTER_LAB(state, data) {
@@ -76,6 +111,20 @@ export default new Vuex.Store({
         return lab.lab_kode != data.lab_kode;
       })
     },
+    FILL_HARGA_LAB(state, data) {
+      state.hargaLab = data;
+    },
+    INSERT_HARGA_LAB(state, data) {
+      state.hargaLab.push(data);
+    },
+    EDIT_HARGA_LAB(state, data) {
+      state.hargaLab = state.hargaLab.map(price => {
+        if (price.id === data.id) {
+          return data;
+        }
+        return price;
+      })
+    },
     FILL_MASTER_RONSEN(state, data) {
       state.masterRonsen = data;
     },
@@ -84,7 +133,7 @@ export default new Vuex.Store({
     },
     EDIT_MASTER_RONSEN(state, data) {
       state.masterRonsen = state.masterRonsen.map(ronsen => {
-        if (ronsen.ronse_kode === data.ronsen_kode) {
+        if (ronsen.ronsen_kode === data.ronsen_kode) {
           return data;
         }
         return ronsen;
@@ -93,6 +142,20 @@ export default new Vuex.Store({
     DELETE_MASTER_RONSEN(state, data) {
       state.masterRonsen = state.masterRonsen.filter(ronsen => {
         return ronsen.ronsen_kode != data.ronsen_kode;
+      })
+    },
+    FILL_HARGA_RONSEN(state, data) {
+      state.hargaRonsen = data;
+    },
+    INSERT_HARGA_RONSEN(state, data) {
+      state.hargaRonsen.push(data);
+    },
+    EDIT_HARGA_RONSEN(state, data) {
+      state.hargaRonsen = state.hargaRonsen.map(price => {
+        if (data.id === price.id) {
+          return data;
+        }
+        return price;
       })
     },
     FILL_MASTER_OBAT(state, data) {
@@ -112,6 +175,20 @@ export default new Vuex.Store({
     DELETE_MASTER_OBAT(state, data) {
       state.masterObat = state.masterObat.filter(obat => {
         return obat.obat_kode != data.obat_kode;
+      })
+    },
+    FILL_HARGA_OBAT(state, data) {
+      state.hargaObat = data;
+    },
+    INSERT_HARGA_OBAT(state, data) {
+      state.hargaObat.push(data);
+    },
+    EDIT_HARGA_OBAT(state, data) {
+      state.hargaObat = state.hargaObat.map(price => {
+        if (data.id === price.id) {
+          return data;
+        }
+        return price;
       })
     },
     FILL_MASTER_PERUSAHAAN(state, data) {
@@ -190,6 +267,20 @@ export default new Vuex.Store({
         return user.user_ID != data.user_ID;
       })
     },
+    FILL_MASTER_TYPE(state, data) {
+      state.masterType = data;
+    },
+    INSERT_MASTER_TYPE(state, data) {
+      state.masterType.push(data);
+    },
+    EDIT_MASTER_TYPE(state, data) {
+      state.masterType = state.masterType.map(type => {
+        if (data.originalName === type.name) {
+          return data;
+        }
+        return type;
+      })
+    }
   },
   actions: {
     async getMasterDoctor(context) {
@@ -254,6 +345,41 @@ export default new Vuex.Store({
           return;
         })
     },
+    async getHargaDoctor(context, id) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const hargaDoctor = await (axios.get(`${baseURL}/doctor/${id}`, { headers: { 'Content-Type': 'application/json' } }));
+      context.commit('FILL_HARGA_DOCTOR', hargaDoctor.data);
+    },
+    createHargaDoctor(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.post(`${baseURL}/hargadoctor`, {
+        'doctor_kode': price.doctorKode,
+        'type': price.type,
+        'doctor_jasa': price.doctorJasa,
+        'doctor_pembagian': price.doctorPembagian,
+        'doctor_on_call': price.doctorOnCall,
+        'doctor_on_visit': price.doctorOnVisit
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          context.commit('INSERT_HARGA_DOCTOR', response.data);
+          return;
+        })
+    },
+    editHargaDoctor(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.put(`${baseURL}/hargadoctor/${price.id}`, {
+        'doctor_jasa': price.doctorJasa,
+        'doctor_pembagian': price.doctorPembagian,
+        'doctor_on_call': price.doctorOnCall,
+        'doctor_on_visit': price.doctorOnVisit
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          response.data['id'] = price.id;
+          response.data['type'] = price.type;
+          context.commit('EDIT_HARGA_DOCTOR', response.data);
+          return;
+        })
+    },
     async getMasterTindakan(context) {
       axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
       const masterTindakan = await (axios.get(`${baseURL}/tindakan`, { headers: { 'Content-Type': 'application/json' } }));
@@ -298,6 +424,45 @@ export default new Vuex.Store({
           return;
         })
     },
+    async getHargaTindakan(context, id) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const hargaTindakan = await (axios.get(`${baseURL}/tindakan/${id}`, { headers: { 'Content-Type': 'application/json' } }));
+      context.commit('FILL_HARGA_TINDAKAN', hargaTindakan.data);
+    },
+    createHargaTindakan(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.post(`${baseURL}/hargatindakan`, {
+        'tindakan_kode': price.tindakanKode,
+        'type': price.type,
+        'tindakan_harga': price.tindakanHarga,
+        'tindakan_sewa_alat': price.tindakanSewaAlat,
+        'tindakan_sewa_ruangan': price.tindakanSewaRuangan,
+        'tindakan_jasa_operator': price.tindakanJasaOperator,
+        'tindakan_jasa_aoperator': price.tindakanJasaAOperator,
+        'tindakan_jasa_paramedis': price.tindakanJasaParamedis
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          context.commit('INSERT_HARGA_TINDAKAN', response.data);
+          return;
+        })
+    },
+    editHargaTindakan(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.put(`${baseURL}/hargatindakan/${price.id}`, {
+        'tindakan_harga': price.tindakanHarga,
+        'tindakan_sewa_alat': price.tindakanSewaAlat,
+        'tindakan_sewa_ruangan': price.tindakanSewaRuangan,
+        'tindakan_jasa_operator': price.tindakanJasaOperator,
+        'tindakan_jasa_aoperator': price.tindakanJasaAOperator,
+        'tindakan_jasa_paramedis': price.tindakanJasaParamedis
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          response.data['id'] = price.id;
+          response.data['type'] = price.type;
+          context.commit('EDIT_HARGA_TINDAKAN', response.data);
+          return;
+        })
+    },
     async getMasterLab(context) {
       axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
       const masterLab = await (axios.get(`${baseURL}/lab`, { headers: { 'Content-Type': 'application/json' } }));
@@ -338,6 +503,35 @@ export default new Vuex.Store({
           return;
         })
     },
+    async getHargaLab(context, id) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const hargaLab = await (axios.get(`${baseURL}/lab/${id}`, { headers: { 'Content-Type': 'application/json' } }));
+      context.commit('FILL_HARGA_LAB', hargaLab.data);
+    },
+    createHargaLab(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.post(`${baseURL}/hargalab`, {
+        'lab_kode': price.labKode,
+        'type': price.type,
+        'harga_lab': price.hargaLab
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          context.commit('INSERT_HARGA_LAB', response.data);
+          return;
+        })
+    },
+    editHargaLab(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.put(`${baseURL}/hargalab/${price.id}`, {
+        'harga_lab': price.hargaLab
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          response.data['id'] = price.id;
+          response.data['type'] = price.type;
+          context.commit('EDIT_HARGA_LAB', response.data);
+          return;
+        })
+    },
     async getMasterRonsen(context) {
       axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
       const masterRonsen = await (axios.get(`${baseURL}/ronsen`, { headers: { 'Content-Type': 'application/json' } }));
@@ -365,6 +559,7 @@ export default new Vuex.Store({
         .then(response => {
           const editedRonsen = response.data;
           editedRonsen['ronsen_kode'] = ronsen.originalID;
+          console.log(editedRonsen);
           context.commit('EDIT_MASTER_RONSEN', editedRonsen);
           return;
         })
@@ -375,6 +570,35 @@ export default new Vuex.Store({
         { headers: { 'Content-Type': 'application/json' } })
         .then(response => {
           context.commit('DELETE_MASTER_RONSEN', ronsen);
+          return;
+        })
+    },
+    async getHargaRonsen(context, id) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const hargaRonsen = await (axios.get(`${baseURL}/ronsen/${id}`, { headers: { 'Content-Type': 'application/json' } }));
+      context.commit('FILL_HARGA_RONSEN', hargaRonsen.data);
+    },
+    createHargaRonsen(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.post(`${baseURL}/hargaronsen`, {
+        'ronsen_kode': price.ronsenKode,
+        'type': price.type,
+        'harga': price.hargaRonsen
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          context.commit('INSERT_HARGA_RONSEN', response.data);
+          return;
+        })
+    },
+    editHargaRonsen(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.put(`${baseURL}/hargaronsen/${price.id}`, {
+        'harga': price.hargaRonsen
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          response.data['id'] = price.id;
+          response.data['type'] = price.type;
+          context.commit('EDIT_HARGA_RONSEN', response.data);
           return;
         })
     },
@@ -433,6 +657,37 @@ export default new Vuex.Store({
         { headers: { 'Content-Type': 'application/json' } })
         .then(response => {
           context.commit('DELETE_MASTER_OBAT', obat);
+          return;
+        })
+    },
+    async getHargaObat(context, id) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const hargaObat = await (axios.get(`${baseURL}/obat/${id}`, { headers: { 'Content-Type': 'application/json' } }));
+      context.commit('FILL_HARGA_OBAT', hargaObat.data);
+    },
+    createHargaObat(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.post(`${baseURL}/hargaobat`, {
+        'obat_kode': price.obatKode,
+        'type': price.type,
+        'harga_box': price.hargaBox,
+        'harga_satuan': price.hargaSatuan
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          context.commit('INSERT_HARGA_OBAT', response.data);
+          return;
+        })
+    },
+    editHargaObat(context, price) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.put(`${baseURL}/hargaobat/${price.id}`, {
+        'harga_box': price.hargaBox,
+        'harga_satuan': price.hargaSatuan
+      }, { headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          response.data['id'] = price.id;
+          response.data['type'] = price.type;
+          context.commit('EDIT_HARGA_OBAT', response.data);
           return;
         })
     },
@@ -583,7 +838,7 @@ export default new Vuex.Store({
         'location': user.location
       }, { headers: { 'Content-Type': 'application/json' } })
         .then(response => {
-          console.log(response);
+          console.log({ response });
           const masterUser = response.data;
           context.commit('INSERT_MASTER_USER', masterUser);
           return;
@@ -620,6 +875,41 @@ export default new Vuex.Store({
         { headers: { 'Content-Type': 'application/json' } })
         .then(response => {
           context.commit('DELETE_MASTER_USER', user);
+          return;
+        })
+    },
+    async getMasterType(context) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const masterType = await (axios.get(`${baseURL}/type`, { headers: { 'Content-Type': 'application/json' } }));
+      context.commit('FILL_MASTER_TYPE', masterType.data);
+    },
+    createMasterType(context, type) {
+      let nama = '';
+      for (let i = 0; i < type.name.length; i++) {
+        nama += type.name[i].toUpperCase();
+      }
+      type.name = nama;
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      return axios.post(`${baseURL}/type`, type, {
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(response => {
+          context.commit('INSERT_MASTER_TYPE', response.data);
+          return;
+        })
+    },
+    editMasterType(context, type) {
+      let nama = '';
+      for (let i = 0; i < type.name.length; i++) {
+        nama += type.name[i].toUpperCase();
+      }
+      type.name = nama;
+      return axios.put(`${baseURL}/type/${type.originalName}`, type, {
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(response => {
+          response.data.originalName = type.originalName;
+          context.commit('EDIT_MASTER_TYPE', response.data);
           return;
         })
     }

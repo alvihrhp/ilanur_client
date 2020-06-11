@@ -59,6 +59,11 @@
             <v-list-item-title>Master User</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item to="/mastertype">
+          <v-list-item-content>
+            <v-list-item-title>Master Type</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list-group>
     </v-list>
   </v-navigation-drawer>

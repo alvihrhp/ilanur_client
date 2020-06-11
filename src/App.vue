@@ -16,7 +16,9 @@
 import Sidebar from "./components/Sidebar";
 export default {
   name: "App",
-
+  created() {
+    this.$store.dispatch("getMasterType");
+  },
   components: {
     Sidebar
   },
@@ -28,6 +30,9 @@ export default {
 </script>
 
 <style scoped>
+* {
+  font-family: "Poppins", sans-serif !important;
+}
 .container {
   padding: 0;
 }

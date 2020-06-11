@@ -14,16 +14,19 @@
         type="success"
         class="success-create-alert"
         v-show="successCreateAlert"
+        v-animate-css="'slideInDown'"
       >Create Doctor Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successEditAlert"
+        v-animate-css="'slideInDown'"
       >Edit Doctor Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successDeleteAlert"
+        v-animate-css="'slideInDown'"
       >Delete Doctor Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
@@ -282,39 +285,16 @@ export default {
     masterDoctor() {
       let header = [];
       if (this.$store.state.masterDoctor.length > 0) {
-        this.$store.state.masterDoctor.forEach((doctor, index) => {
-          const keys = Object.keys(doctor);
-          keys.forEach(key => {
-            if (index === 0) {
-              if (
-                key === "doctor_kode" ||
-                key === "doctor_nama" ||
-                key === "doctor_phone" ||
-                key === "doctor_hp" ||
-                key === "doctor_pemeriksaan"
-              ) {
-                let objectHeader = {};
-                const keyArray = key.replace("_", " ").split("");
-                keyArray[0] = keyArray[0].toUpperCase();
-                keyArray[7] = keyArray[7].toUpperCase();
-                const keyStr = keyArray.join("");
-                if (key === "doctor_kode") {
-                  objectHeader["text"] = keyStr;
-                  objectHeader["value"] = key;
-                  objectHeader["align"] = "start";
-                  header.push(objectHeader);
-                } else if (key !== "doctor_kode") {
-                  objectHeader["text"] = keyStr;
-                  objectHeader["value"] = key;
-                  header.push(objectHeader);
-                }
-              }
-            }
-          });
-          if (index === 0) {
-            header.push({ text: "Actions", value: "actions", sortable: false });
-          }
-        });
+        header = [
+          { text: "Doctor Kode", value: "doctor_kode", align: "start" },
+          { text: "Doctor Nama", value: "doctor_nama" },
+          { text: "Doctor Phone", value: "doctor_phone" },
+          { text: "Doctor Hp", value: "doctor_hp" },
+          { text: "Doctor Pemeriksaan", value: "doctor_pemeriksaan" },
+          { text: "Actions", value: "actions", sortable: false },
+          { text: "", value: "data-table-expand" }
+        ];
+
         return {
           data: this.$store.state.masterDoctor,
           header

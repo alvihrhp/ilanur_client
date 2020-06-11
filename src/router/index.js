@@ -10,6 +10,8 @@ import Masterperusahaan from '../views/Masterperusahaan.vue'
 import Masterasuransi from '../views/Masterasuransi.vue'
 import Masterdistributor from '../views/Masterdistributor.vue'
 import Masteruser from '../views/Masteruser.vue'
+import Mastertype from '../views/Mastertype.vue'
+import Detailprice from '../views/Detailprice.vue'
 
 Vue.use(VueRouter)
 
@@ -63,6 +65,16 @@ const routes = [
     path: '/masteruser',
     name: 'Masteruser',
     component: Masteruser
+  },
+  {
+    path: '/mastertype',
+    name: 'Mastertype',
+    component: Mastertype
+  },
+  {
+    path: '/detailprice/:from/:id',
+    name: 'detailprice',
+    component: Detailprice,
   }
 ]
 

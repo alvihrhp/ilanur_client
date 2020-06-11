@@ -14,16 +14,19 @@
         type="success"
         class="success-create-alert"
         v-show="successCreateAlert"
+        v-animate-css="'slideInDown'"
       >Create Asuransi Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successEditAlert"
+        v-animate-css="'slideInDown'"
       >Edit Asuransi Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successDeleteAlert"
+        v-animate-css="'slideInDown'"
       >Delete Asuransi Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
@@ -61,7 +64,9 @@
           data: masterAsuransi.data,
           header: masterAsuransi.header,
           cardTitle: 'Table Asuransi',
-          editDetail: editForm
+          editDetail: editForm,
+          buttonEdit: true,
+          buttonDelete: true
       }"
         v-on:inputFormEdit="inputEditAsuransi"
         v-on:editAsuransiSuccess="successEdit"

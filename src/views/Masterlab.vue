@@ -14,16 +14,19 @@
         type="success"
         class="success-create-alert"
         v-show="successCreateAlert"
+        v-animate-css="'slideInDown'"
       >Create Lab Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successEditAlert"
+        v-animate-css="'slideInDown'"
       >Edit Lab Success</v-alert>
       <v-alert
         type="success"
         class="success-create-alert"
         v-show="successDeleteAlert"
+        v-animate-css="'slideInDown'"
       >Delete Lab Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
@@ -106,7 +109,7 @@ export default {
         labKode: "",
         labNamaPemeriksaan: "",
         typeHarga: null,
-        hargaLab: 0
+        hargaLab: "0"
       },
       validationRules: {
         labKode: [v => !!v || "Lab Kode is required"],
@@ -127,35 +130,12 @@ export default {
     masterLab() {
       let header = [];
       if (this.$store.state.masterLab.length > 0) {
-        this.$store.state.masterLab.forEach((lab, index) => {
-          Object.keys(lab).forEach(key => {
-            if (index === 0) {
-              let objectHeader = {};
-              const newKey = key.replace("_", " ").split("");
-              newKey[0] = newKey[0].toUpperCase();
-              let headerKey;
-              if (key === "lab_kode") {
-                newKey[4] = newKey[4].toUpperCase();
-                headerKey = newKey.join("");
-                objectHeader["text"] = headerKey;
-                objectHeader["value"] = key;
-                objectHeader["align"] = "start";
-                header.push(objectHeader);
-              } else if (key !== "lab_kode") {
-                newKey[4] = newKey[4].toUpperCase();
-                newKey[8] = " ";
-                newKey[9] = newKey[9].toUpperCase();
-                headerKey = newKey.join("");
-                objectHeader["text"] = headerKey;
-                objectHeader["value"] = key;
-                header.push(objectHeader);
-              }
-            }
-          });
-          if (index === 0) {
-            header.push({ text: "Actions", value: "actions", sortable: false });
-          }
-        });
+        header = [
+          { text: "Lab Kode", value: "lab_kode", align: "start" },
+          { text: "Lab Nama Pemeriksaan", value: "lab_nama_pemeriksaan" },
+          { text: "Actions", value: "actions", sortable: false },
+          { text: "", value: "data-table-expand" }
+        ];
         return {
           data: this.$store.state.masterLab,
           header
