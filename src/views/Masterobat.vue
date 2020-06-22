@@ -6,10 +6,7 @@
         title: 'Master Obat'
     }"
     ></Banner>
-    <div class="loading" v-if="masterObat.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -97,7 +94,7 @@
             label="Tipe Pembayaran"
             v-model="formInput.typeHarga"
             :rules="validationRules.typeHarga"
-            :items="selectTypeHarga"
+            :items="masterType"
             required
           ></v-select>
         </v-col>
@@ -109,15 +106,22 @@
         </v-col>
       </Formdialog>
       <Datatable
+        :key="key"
         v-bind:dataTableDetail="{
         cardTitle: 'Table Obat',
         header: masterObat.header,
         data: masterObat.data,
-        editDetail: editForm
+        length: masterObat.length,
+        editDetail: editForm,
+        buttonEdit: true,
+        buttonDelete: true,
+        loadingData,
+        itemKey: 'obat_kode',
       }"
         v-on:inputFormEdit="inputEditObat"
         v-on:editObatSuccess="successEdit"
         v-on:deleteObatSuccess="successDelete"
+        v-on:getData="getMasterObat"
       >
         <v-col cols="6" sm="6" md="6">
           <v-text-field
@@ -183,11 +187,10 @@ export default {
     Datatable,
     Formdialog
   },
-  created() {
-    this.$store.dispatch("getMasterObat");
-  },
   data() {
     return {
+      loadingData: true,
+      key: false,
       validationRules: {
         obatKode: [v => !!v || "Kode Obat is required"],
         obatNama: [v => !!v || "Nama Obat is required"],
@@ -237,33 +240,70 @@ export default {
         originalID: ""
       },
       successEditAlert: false,
-      successDeleteAlert: false
+      successDeleteAlert: false,
+      header: [
+        { text: "Obat Kode", value: "obat_kode", align: "start" },
+        { text: "Obat Nama", value: "obat_nama" },
+        { text: "Obat Quantity", value: "obat_quantity" },
+        { text: "Actions", value: "actions", sortable: false },
+        { text: "", value: "data-table-expand" }
+      ]
     };
   },
   computed: {
     masterObat() {
-      let header = [];
       if (this.$store.state.masterObat.length > 0) {
-        header = [
-          { text: "Obat Kode", value: "obat_kode", align: "start" },
-          { text: "Obat Nama", value: "obat_nama" },
-          { text: "Obat Quantity", value: "obat_quantity" },
-          { text: "Actions", value: "actions", sortable: false },
-          { text: "", value: "data-table-expand" }
-        ];
         return {
           data: this.$store.state.masterObat,
-          header
+          header: this.header,
+          length: this.$store.state.totalMasterObat
         };
       } else {
         return {
           data: [],
-          header
+          header: this.header,
+          length: 0
         };
       }
+    },
+    masterType() {
+      const type = this.$store.state.masterType
+        .map(data => {
+          if (data.status === "AKTIF") {
+            return data.name;
+          }
+        })
+        .filter(data => {
+          return data !== undefined;
+        });
+      return type;
     }
   },
   methods: {
+    getMasterObat(params) {
+      this.loadingData = true;
+      const newParams = {
+        page: params.page,
+        itemsPerPage: params.itemsPerPage,
+        sortBy: params.sortBy[0],
+        sortDesc: params.sortDesc[0],
+        search: params.search
+      };
+      this.$store
+        .dispatch("getMasterObat", newParams)
+        .then(() => {
+          this.loadingData = false;
+          this.key = true;
+        })
+        .catch(error => {
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+          }
+        });
+    },
     resetFormInput() {
       this.formInput.obatKode = "";
       this.formInput.obatNama = "";

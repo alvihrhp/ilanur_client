@@ -1,0 +1,125 @@
+<template>
+  <v-container fluid class="login">
+    <v-row justify="center" align="center" class="container-row">
+      <v-col cols="4" md="4" sm="4">
+        <v-card :height="cardHeight" color="#ee9632">
+          <div class="login-title">
+            <h1>ilanur</h1>
+          </div>
+          <div class="alert-container" v-show="isError">
+            <v-alert type="error">{{errorMessage}}</v-alert>
+          </div>
+          <v-form>
+            <v-container>
+              <v-row justify="center">
+                <v-col cols="8" sm="10" md="10">
+                  <v-text-field
+                    color="#ffffff"
+                    solo
+                    label="Username"
+                    v-model="formInput.username"
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="8" sm="10" md="10">
+                  <v-text-field
+                    color="#ffffff"
+                    solo
+                    label="Password"
+                    v-model="formInput.password"
+                    type="password"
+                    outlined
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-form>
+          <div class="button-container">
+            <v-btn
+              large
+              width="200px"
+              min-height="20px"
+              class="button-login"
+              v-on:click="login"
+            >Login</v-btn>
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+
+<script>
+export default {
+  name: "Login",
+  data() {
+    return {
+      formInput: {
+        username: "",
+        password: ""
+      },
+      isError: false,
+      errorMessage: "",
+      cardHeight: "400px"
+    };
+  },
+  methods: {
+    login() {
+      this.$store
+        .dispatch("login", this.formInput)
+        .then(_ => {
+          this.$router.push("/dashboard");
+          this.$store.dispatch("getMasterType");
+          this.cardHeight = "400px";
+        })
+        .catch(error => {
+          console.log({ error });
+          this.cardHeight = "500px";
+          this.isError = true;
+          const errorKey = Object.keys(
+            { error }.error.response.data.messages
+          )[0];
+          this.errorMessage = { error }.error.response.data.messages[errorKey];
+        });
+    }
+  }
+};
+</script>
+
+<style scoped>
+.login {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("../assets/login.jpg") no-repeat center center;
+  background-size: cover;
+}
+
+.container-row {
+  height: 100vh;
+}
+
+.login-title {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.login-title h1 {
+  letter-spacing: 3px;
+  color: #ffffff;
+}
+
+.alert-container {
+  padding: 0 30px;
+}
+
+.form-container {
+  text-align: center;
+}
+
+.button-container {
+  text-align: center;
+}
+
+.button-login {
+  color: #ffffff;
+}
+</style>

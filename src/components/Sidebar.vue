@@ -39,6 +39,11 @@
             <v-list-item-title>Master Obat</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item to="/masterkamar">
+          <v-list-item-content>
+            <v-list-item-title>Master Kamar</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item to="/masterperusahaan">
           <v-list-item-content>
             <v-list-item-title>Master Perusahaan</v-list-item-title>
@@ -62,6 +67,11 @@
         <v-list-item to="/mastertype">
           <v-list-item-content>
             <v-list-item-title>Master Type</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/masterlantai">
+          <v-list-item-content>
+            <v-list-item-title>Master Lantai</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-group>

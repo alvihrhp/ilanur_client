@@ -6,10 +6,7 @@
         background: 'user.jpg'
     }"
     ></Banner>
-    <div class="loading" v-if="masterUser.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -89,17 +86,22 @@
         </v-col>
       </Formdialog>
       <Datatable
+        :key="key"
         v-bind:dataTableDetail="{
           cardTitle: 'Table User',
           data: masterUser.data,
           header: masterUser.header,
+          length: masterUser.length,
           editDetail: editForm,
           buttonEdit: true,
-          buttonDelete: true
+          buttonDelete: true,
+          loadingData,
+          itemKey: 'user_ID',
       }"
         v-on:inputFormEdit="inputEditUser"
         v-on:editUserSuccess="successEdit"
         v-on:deleteUserSuccess="successDelete"
+        v-on:getData="getMasterUser"
       >
         <v-col cols="6" sm="6" md="6">
           <v-text-field
@@ -168,11 +170,10 @@ export default {
     Datatable,
     Formdialog
   },
-  created() {
-    this.$store.dispatch("getMasterUser");
-  },
   data() {
     return {
+      loadingData: true,
+      key: false,
       validationRules: {
         pUsername: [v => !!v || "Username is required"],
         pPassword: [v => !!v || "Password is required"],
@@ -211,68 +212,60 @@ export default {
         originalUsername: ""
       },
       successEditAlert: false,
-      successDeleteAlert: false
+      successDeleteAlert: false,
+      header: [
+        { text: "Username", value: "pusername", align: "start" },
+        { text: "First Name", value: "pfirstname" },
+        { text: "Last Name", value: "plastname" },
+        { text: "role", value: "role" },
+        { text: "location", value: "location" }
+      ]
     };
   },
   computed: {
     masterUser() {
       let header = [];
       if (this.$store.state.masterUser.length > 0) {
-        this.$store.state.masterUser.forEach((user, index) => {
-          Object.keys(user).forEach(key => {
-            if (index === 0) {
-              let objectHeader = {};
-              if (
-                key === "pusername" ||
-                key === "pfirstname" ||
-                key === "plastname" ||
-                key === "role"
-              ) {
-                let newKey;
-                let headerKey;
-                if (key[0] === "p") {
-                  newKey = key.slice(1).split("");
-                  const nIndex = newKey.indexOf("n");
-                  newKey[0] = newKey[0].toUpperCase();
-                  newKey[nIndex] = newKey[nIndex].toUpperCase();
-                  newKey.splice(nIndex, 0, " ");
-                  headerKey = newKey.join("");
-                  if (key === "pusername") {
-                    objectHeader["text"] = headerKey;
-                    objectHeader["value"] = key;
-                    objectHeader["align"] = "start";
-                    header.push(objectHeader);
-                  } else {
-                    objectHeader["text"] = headerKey;
-                    objectHeader["value"] = key;
-                    header.push(objectHeader);
-                  }
-                } else {
-                  headerKey = key.replace("r", "R");
-                  objectHeader["text"] = headerKey;
-                  objectHeader["value"] = key;
-                  header.push(objectHeader);
-                }
-              }
-            }
-          });
-          if (index === 0) {
-            header.push({ text: "Actions", value: "actions", sortable: false });
-          }
-        });
         return {
           data: this.$store.state.masterUser,
-          header
+          header: this.header,
+          length: this.$store.state.totalMasterUser
         };
       } else {
         return {
           data: [],
-          header
+          header: this.header,
+          length: 0
         };
       }
     }
   },
   methods: {
+    getMasterUser(params) {
+      this.loadingData = true;
+      const newParams = {
+        page: params.page,
+        itemsPerPage: params.itemsPerPage,
+        sortBy: params.sortBy[0],
+        sortDesc: params.sortDesc[0],
+        search: params.search
+      };
+      this.$store
+        .dispatch("getMasterUser", newParams)
+        .then(() => {
+          this.loadingData = false;
+          this.key = true;
+        })
+        .catch(error => {
+          console.log({ error });
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+          }
+        });
+    },
     resetFormInput() {
       this.formInput.pUsername = "";
       this.formInput.pPassword = "";

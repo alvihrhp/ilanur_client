@@ -6,10 +6,7 @@
         title: 'Master Doctor'
     }"
     ></Banner>
-    <div class="loading" v-if="masterDoctor.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -105,7 +102,7 @@
             label="Tipe Harga Dokter"
             v-model="formInput.typeHarga"
             :rules="validationForm.typeHarga"
-            :items="selectFormTypeHarga"
+            :items="masterType"
             required
           ></v-select>
         </v-col>
@@ -143,15 +140,22 @@
         </v-col>
       </Formdialog>
       <Datatable
+        :key="key"
         v-bind:dataTableDetail="{
         data: masterDoctor.data,
         header: masterDoctor.header,
+        length: masterDoctor.length,
+        itemKey: 'doctor_kode',
         cardTitle: 'Table Doctor',
-        editDetail: editForm
+        editDetail: editForm,
+        buttonEdit: true,
+        buttonDelete: true,
+        loadingData,
       }"
         v-on:inputFormEdit="inputEditDokter"
         v-on:editDoctorSuccess="successEdit"
         v-on:deleteDoctorSuccess="successDelete"
+        v-on:getData="getMasterDoctor"
       >
         <v-col cols="6" md="6" sm="6">
           <v-text-field
@@ -225,9 +229,6 @@ export default {
     Datatable,
     Formdialog
   },
-  created() {
-    this.$store.dispatch("getMasterDoctor");
-  },
   data() {
     return {
       validationForm: {
@@ -261,7 +262,6 @@ export default {
         dokterOnCall: ""
       },
       selectFormKelamin: ["Pria", "Wanita"],
-      selectFormTypeHarga: ["UMUM", "BPJS", "ASURANSI/PERUSAHAAN"],
       successCreateAlert: false,
       editForm: {
         kodeDokter: "",
@@ -278,36 +278,74 @@ export default {
         originalID: ""
       },
       successEditAlert: false,
-      successDeleteAlert: false
+      successDeleteAlert: false,
+      key: false,
+      header: [
+        { text: "Doctor Kode", value: "doctor_kode", align: "start" },
+        { text: "Doctor Nama", value: "doctor_nama" },
+        { text: "Doctor Phone", value: "doctor_phone" },
+        { text: "Doctor Hp", value: "doctor_hp" },
+        { text: "Doctor Pemeriksaan", value: "doctor_pemeriksaan" },
+        { text: "Actions", value: "actions", sortable: false },
+        { text: "", value: "data-table-expand" }
+      ],
+      loadingData: true
     };
   },
   computed: {
     masterDoctor() {
-      let header = [];
       if (this.$store.state.masterDoctor.length > 0) {
-        header = [
-          { text: "Doctor Kode", value: "doctor_kode", align: "start" },
-          { text: "Doctor Nama", value: "doctor_nama" },
-          { text: "Doctor Phone", value: "doctor_phone" },
-          { text: "Doctor Hp", value: "doctor_hp" },
-          { text: "Doctor Pemeriksaan", value: "doctor_pemeriksaan" },
-          { text: "Actions", value: "actions", sortable: false },
-          { text: "", value: "data-table-expand" }
-        ];
-
         return {
           data: this.$store.state.masterDoctor,
-          header
+          header: this.header,
+          length: this.$store.state.totalMasterDoctor
         };
       } else {
         return {
           data: [],
-          header
+          header: this.header,
+          length: 0
         };
       }
+    },
+    masterType() {
+      const type = this.$store.state.masterType
+        .map(data => {
+          if (data.status === "AKTIF") {
+            return data.name;
+          }
+        })
+        .filter(data => {
+          return data !== undefined;
+        });
+      return type;
     }
   },
   methods: {
+    getMasterDoctor(params) {
+      this.loadingData = true;
+      const newParams = {
+        page: params.page,
+        itemsPerPage: params.itemsPerPage,
+        sortBy: params.sortBy[0],
+        sortDesc: params.sortDesc[0],
+        search: params.search
+      };
+      this.$store
+        .dispatch("getMasterDoctor", newParams)
+        .then(() => {
+          this.key = true;
+          this.loadingData = false;
+        })
+        .catch(error => {
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+          }
+        });
+    },
     resetFormInput() {
       this.formInput.kodeDokter = "";
       this.formInput.namaDokter = "";

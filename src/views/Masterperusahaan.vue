@@ -6,10 +6,7 @@
         title: 'Master Perusahaan'
     }"
     ></Banner>
-    <div class="loading" v-if="masterPerusahaan.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -60,17 +57,22 @@
         </v-col>
       </Formdialog>
       <Datatable
+        :key="key"
         v-bind:dataTableDetail="{
         data: masterPerusahaan.data,
         header: masterPerusahaan.header,
+        length: masterPerusahaan.length,
         cardTitle: 'Table Perusahaan',
         editDetail: editForm,
         buttonEdit: true,
-        buttonDelete: true
+        buttonDelete: true,
+        loadingData,
+        itemKey: 'master_perusahaan_ID',
       }"
         v-on:inputFormEdit="inputEditPerusahaan"
         v-on:editPerusahaanSuccess="successEdit"
         v-on:deletePerusahaanSuccess="successDelete"
+        v-on:getData="getMasterPerusahaan"
       >
         <v-col cols="6" sm="6" md="6">
           <v-text-field
@@ -110,11 +112,10 @@ export default {
     Datatable,
     Formdialog
   },
-  created() {
-    this.$store.dispatch("getMasterPerusahaan");
-  },
   data() {
     return {
+      loadingData: true,
+      key: false,
       validatonRules: {
         masterPerusahaanNama: [v => !!v || "Nama Perusahaan is required"],
         masterPerusahaanHarga: [v => !!v || "Harga Perusahaan is required"]
@@ -134,60 +135,62 @@ export default {
         originalID: ""
       },
       successEditAlert: false,
-      successDeleteAlert: false
+      successDeleteAlert: false,
+      header: [
+        {
+          text: "Nama Perusahaan",
+          value: "master_perusahaan_nama",
+          align: "start"
+        },
+        { text: "Alamat Perusahaan", value: "master_perusahaan_alamat" },
+        { text: "Telpon Perusahaan", value: "master_perusahaan_telpon" },
+        { text: "Harga Perusahaan", value: "master_perusahaan_harga" },
+        { text: "Actions", value: "actions", sortable: false }
+      ]
     };
   },
   computed: {
     masterPerusahaan() {
-      let header = [];
       if (this.$store.state.masterPerusahaan.length > 0) {
-        this.$store.state.masterPerusahaan.forEach((perusahaan, index) => {
-          Object.keys(perusahaan).forEach(key => {
-            if (index === 0) {
-              let objectHeader = {};
-              if (
-                key === "master_perusahaan_nama" ||
-                key === "master_perusahaan_alamat" ||
-                key === "master_perusahaan_harga" ||
-                key === "master_perusahaan_telpon"
-              ) {
-                const newKey = key
-                  .slice(7)
-                  .replace("_", " ")
-                  .split("");
-                newKey[0] = newKey[0].toUpperCase();
-                newKey[11] = newKey[11].toUpperCase();
-                const headerKey = newKey.join("");
-                if (key === "master_perusahaan_nama") {
-                  objectHeader["text"] = headerKey;
-                  objectHeader["value"] = key;
-                  objectHeader["align"] = "start";
-                  header.push(objectHeader);
-                } else if (key !== "master_perusahaan_nama") {
-                  objectHeader["text"] = headerKey;
-                  objectHeader["value"] = key;
-                  header.push(objectHeader);
-                }
-              }
-            }
-          });
-          if (index === 0) {
-            header.push({ text: "Actions", value: "actions", sortable: false });
-          }
-        });
         return {
           data: this.$store.state.masterPerusahaan,
-          header
+          header: this.header,
+          length: this.$store.state.totalMasterPerusahaan
         };
       } else {
         return {
           data: [],
-          header
+          header: this.header,
+          length: 0
         };
       }
     }
   },
   methods: {
+    getMasterPerusahaan(params) {
+      this.loadingData = true;
+      const newParams = {
+        page: params.page,
+        itemsPerPage: params.itemsPerPage,
+        sortBy: params.sortBy[0],
+        sortDesc: params.sortDesc[0],
+        search: params.search
+      };
+      this.$store
+        .dispatch("getMasterPerusahaan", newParams)
+        .then(() => {
+          this.loadingData = false;
+          this.key = true;
+        })
+        .catch(error => {
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+          }
+        });
+    },
     resetFormInput() {
       this.formInput.masterPerusahaanNama = "";
       this.formInput.masterPerusahaanAlamat = "";

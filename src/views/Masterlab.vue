@@ -6,10 +6,7 @@
         background: 'lab.jpg'
     }"
     ></Banner>
-    <div class="loading" v-if="masterLab.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -57,7 +54,7 @@
             label="Tipe Pembayaran"
             v-model="formInput.typeHarga"
             :rules="validationRules.typeHarga"
-            :items="selectTypeHarga"
+            :items="masterType"
             required
           ></v-select>
         </v-col>
@@ -66,15 +63,22 @@
         </v-col>
       </Formdialog>
       <Datatable
+        :key="key"
         v-bind:dataTableDetail="{
           data: masterLab.data,
           header: masterLab.header,
+          length: masterLab.length,
           cardTitle: 'Table Lab',
-          editDetail: editForm
+          editDetail: editForm,
+          buttonEdit: true,
+          buttonDelete: true,
+          itemKey: 'lab_kode',
+          loadingData
       }"
         v-on:inputFormEdit="inputEditLab"
         v-on:editLabSuccess="successEdit"
         v-on:deleteLabSuccess="successDelete"
+        v-on:getData="getMasterLab"
       >
         <v-col cols="12" md="12" sm="12">
           <v-text-field
@@ -100,11 +104,10 @@ export default {
     Datatable,
     Formdialog
   },
-  created() {
-    this.$store.dispatch("getMasterLab");
-  },
   data() {
     return {
+      loadingData: true,
+      key: false,
       formInput: {
         labKode: "",
         labNamaPemeriksaan: "",
@@ -123,32 +126,69 @@ export default {
         originalID: ""
       },
       successEditAlert: false,
-      successDeleteAlert: false
+      successDeleteAlert: false,
+      header: [
+        { text: "Lab Kode", value: "lab_kode", align: "start" },
+        { text: "Lab Nama Pemeriksaan", value: "lab_nama_pemeriksaan" },
+        { text: "Actions", value: "actions", sortable: false },
+        { text: "", value: "data-table-expand" }
+      ]
     };
   },
   computed: {
     masterLab() {
-      let header = [];
       if (this.$store.state.masterLab.length > 0) {
-        header = [
-          { text: "Lab Kode", value: "lab_kode", align: "start" },
-          { text: "Lab Nama Pemeriksaan", value: "lab_nama_pemeriksaan" },
-          { text: "Actions", value: "actions", sortable: false },
-          { text: "", value: "data-table-expand" }
-        ];
         return {
           data: this.$store.state.masterLab,
-          header
+          header: this.header,
+          length: this.$store.state.totalMasterLab
         };
       } else {
         return {
           data: [],
-          header
+          header: this.header,
+          lenght: 0
         };
       }
+    },
+    masterType() {
+      const type = this.$store.state.masterType
+        .map(data => {
+          if (data.status === "AKTIF") {
+            return data.name;
+          }
+        })
+        .filter(data => {
+          return data !== undefined;
+        });
+      return type;
     }
   },
   methods: {
+    getMasterLab(params) {
+      this.loadingData = true;
+      const newParams = {
+        page: params.page,
+        itemsPerPage: params.itemsPerPage,
+        sortBy: params.sortBy[0],
+        sortDesc: params.sortDesc[0],
+        search: params.search
+      };
+      this.$store
+        .dispatch("getMasterLab", newParams)
+        .then(() => {
+          this.loadingData = false;
+          this.key = true;
+        })
+        .catch(error => {
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+          }
+        });
+    },
     resetFormInput() {
       this.formInput.labKode = "";
       this.formInput.labNamaPemeriksaan = "";

@@ -1,21 +1,29 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Login from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Masterdoctor from '../views/Masterdoctor.vue'
 import Masterlab from '../views/Masterlab.vue'
 import Mastertindakan from '../views/Mastertindakan.vue'
 import Masterronsen from '../views/Masterronsen.vue'
 import Masterobat from '../views/Masterobat.vue'
+import Masterkamar from '../views/Masterkamar.vue'
 import Masterperusahaan from '../views/Masterperusahaan.vue'
 import Masterasuransi from '../views/Masterasuransi.vue'
 import Masterdistributor from '../views/Masterdistributor.vue'
 import Masteruser from '../views/Masteruser.vue'
 import Mastertype from '../views/Mastertype.vue'
-import Detailprice from '../views/Detailprice.vue'
+import Masterlantai from '../views/Masterlantai.vue'
+
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
   {
     path: '/dashboard',
     name: 'Dashboard',
@@ -47,6 +55,11 @@ const routes = [
     component: Masterobat
   },
   {
+    path: '/masterkamar',
+    name: 'Masterkamar',
+    component: Masterkamar
+  },
+  {
     path: '/masterperusahaan',
     name: 'Masterperusahaan',
     component: Masterperusahaan
@@ -72,9 +85,9 @@ const routes = [
     component: Mastertype
   },
   {
-    path: '/detailprice/:from/:id',
-    name: 'detailprice',
-    component: Detailprice,
+    path: '/masterlantai',
+    name: 'Masterlantai',
+    component: Masterlantai
   }
 ]
 

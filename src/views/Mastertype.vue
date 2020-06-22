@@ -6,10 +6,7 @@
         title: 'Master Type'
     }"
     ></Banner>
-    <div class="loading" v-if="masterType.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -55,7 +52,8 @@
           cardTitle: 'Table Type',
           buttonEdit: true,
           buttonDelete: false,
-          editDetail: editFormInput
+          editDetail: editFormInput,
+          itemKey:'name'
       }"
         v-on:inputFormEdit="inputEditType"
         v-on:editTypeSuccess="successEdit"
@@ -96,14 +94,17 @@ export default {
   computed: {
     masterType() {
       if (this.$store.state.masterType.length > 0) {
+        console.log(this.$store.state.masterType);
         return {
           header: this.header,
-          data: this.$store.state.masterType
+          data: this.$store.state.masterType,
+          length: this.$store.state.totalMasterType
         };
       } else {
         return {
           header: this.header,
-          data: []
+          data: [],
+          length: 0
         };
       }
     }

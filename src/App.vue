@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <Sidebar></Sidebar>
+    <Sidebar v-if="isLoggedIn"></Sidebar>
     <!-- Sizes your content based upon application components -->
     <v-content>
       <!-- Provides the application the proper gutter -->
@@ -17,15 +17,35 @@ import Sidebar from "./components/Sidebar";
 export default {
   name: "App",
   created() {
-    this.$store.dispatch("getMasterType");
+    if (!localStorage.getItem("token")) {
+      this.$router.replace("/login");
+    } else {
+      const token = localStorage.getItem("token");
+      this.$store
+        .dispatch("tokenCheck", token)
+        .then(() => {
+          this.$router.push("/dashboard");
+          this.$store.dispatch("getMasterType");
+          this.$store.dispatch("getMasterLantai");
+        })
+        .catch(error => {
+          const errorStatus = { error }.error.response.status;
+          console.log({ error }.error);
+          this.$router.replace("/login");
+        });
+    }
   },
   components: {
     Sidebar
   },
-
-  data: () => ({
-    //
-  })
+  data() {
+    return {};
+  },
+  computed: {
+    isLoggedIn() {
+      return this.$store.state.isLoggedIn;
+    }
+  }
 };
 </script>
 

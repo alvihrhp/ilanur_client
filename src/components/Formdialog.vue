@@ -76,6 +76,13 @@ export default {
             { error }.error.response.data.messages
           )[0];
           this.errorMessage = { error }.error.response.data.messages[errorKey];
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+            this.isError = false;
+          }
         });
     }
   }

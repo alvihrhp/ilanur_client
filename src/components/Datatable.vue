@@ -9,18 +9,21 @@
         label="search"
         single-line
         hide-details
+        :placeholder="placeHolderSearch"
       ></v-text-field>
     </v-card-title>
     <v-data-table
       v-if="conditionDataTable === true"
       :headers="headers"
+      :items-per-page="10"
       :items="data"
       :item-key="itemKey"
-      :items-per-page="10"
       :single-expand="singleExpand"
       :expanded.sync="expanded"
+      :options.sync="options"
+      :server-items-length="length"
+      :loading="loading"
       show-expand
-      :search="search"
       class="elevation-1"
       v-animate-css="'fadeIn'"
     >
@@ -48,8 +51,8 @@
         </v-dialog>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="editItem(item)" color="#FFCC00">mdi-pencil</v-icon>
-        <v-icon @click="deleteItem(item)" color="#bb2124">mdi-delete</v-icon>
+        <v-icon class="mr-2" @click="editItem(item)" v-show="buttonEdit" color="#FFCC00">mdi-pencil</v-icon>
+        <v-icon @click="deleteItem(item)" v-show="buttonDelete" color="#bb2124">mdi-delete</v-icon>
       </template>
       <template v-slot:expanded-item="{ headers, item }">
         <td
@@ -267,6 +270,32 @@
                 ></v-text-field>
               </v-col>
             </template>
+            <template v-else-if="getRouteName === 'Masterkamar'">
+              <v-col cols="6" md="6" sm="6">
+                <v-select
+                  label="Kelas Kamar"
+                  v-model="formInputHargaKamar.kelas"
+                  :rules="validationFormKamar.kelas"
+                  :items="selectKamarKelas"
+                  required
+                ></v-select>
+              </v-col>
+              <v-col cols="6" md="6" sm="6">
+                <v-select
+                  label="Type"
+                  v-model="formInputHargaKamar.type"
+                  :rules="validationFormKamar.type"
+                  :items="selectType"
+                  required
+                ></v-select>
+              </v-col>
+              <v-col cols="6" md="6" sm="6">
+                <v-text-field label="Kapasitas" v-model="formInputHargaKamar.kapasitas" required></v-text-field>
+              </v-col>
+              <v-col cols="6" md="6" sm="6">
+                <v-text-field label="Harga" v-model="formInputHargaKamar.harga" required></v-text-field>
+              </v-col>
+            </template>
           </Formdialog>
           <Tabledetail
             v-bind:detail="{
@@ -400,6 +429,23 @@
                 ></v-text-field>
               </v-col>
             </template>
+            <template v-else-if="getRouteName === 'Masterkamar'">
+              <v-col cols="6" md="6" sm="6">
+                <v-select
+                  label="Kelas Kamar"
+                  v-model="editFormHargaKamar.kelas"
+                  :rules="validationFormKamar.kelas"
+                  :items="selectKamarKelas"
+                  required
+                ></v-select>
+              </v-col>
+              <v-col cols="6" md="6" sm="6">
+                <v-text-field label="Kapasitas" v-model="editFormHargaKamar.kapasitas" required></v-text-field>
+              </v-col>
+              <v-col cols="6" md="6" sm="6">
+                <v-text-field label="Harga" v-model="editFormHargaKamar.harga" required></v-text-field>
+              </v-col>
+            </template>
           </Tabledetail>
         </td>
       </template>
@@ -411,6 +457,9 @@
       :item-key="itemKey"
       :items-per-page="10"
       :search="search"
+      :options.sync="options"
+      :server-items-length="length"
+      :loading="loading"
       class="elevation-1"
       v-animate-css="'fadeIn'"
     >
@@ -463,11 +512,14 @@ export default {
       title: this.dataTableDetail.cardTitle,
       dialog: false,
       editForm: this.dataTableDetail.editDetail,
+      length: this.dataTableDetail.length,
       isError: false,
       errorMessage: "",
       buttonAction: true,
       singleExpand: true,
       expanded: [],
+      options: {},
+      itemKey: this.dataTableDetail.itemKey,
       formInputHargaDoctor: {
         doctorKode: "",
         type: null,
@@ -576,6 +628,25 @@ export default {
         hargaBox: [v => !!v || "Harga Box is required"],
         hargaSatuan: [v => !!v || "Harga Satuan is required"]
       },
+      formInputHargaKamar: {
+        kamarId: "",
+        kelas: null,
+        type: null,
+        kapasitas: "0",
+        harga: "0"
+      },
+      editFormHargaKamar: {
+        id: "",
+        kelas: null,
+        type: null,
+        kapasitas: "0",
+        harga: "0"
+      },
+      validationFormKamar: {
+        type: [v => !!v || "Type is required"],
+        kelas: [v => !!v || "Kelas is required"]
+      },
+      selectKamarKelas: ["VVIP", "VIP", "SATU", "DUA", "TIGA"],
       successCreateAlert: false,
       successCreateMessage: "",
       successEditAlert: false,
@@ -584,22 +655,36 @@ export default {
       buttonDelete: this.dataTableDetail.buttonDelete
     };
   },
+  watch: {
+    params: {
+      handler() {
+        this.$emit("getData", this.params);
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.$emit("getData", this.params);
+  },
   computed: {
+    placeHolderSearch() {
+      return this.$route.name.slice(6);
+      +" " + "Kode";
+    },
+    loading() {
+      return this.dataTableDetail.loadingData;
+    },
+    params() {
+      return {
+        ...this.options,
+        search: this.search
+      };
+    },
     formEditTitle() {
       return "Edit" + this.title.slice(5);
     },
     data() {
       return this.dataTableDetail.data;
-    },
-    itemKey() {
-      const currentRoute = this.$route.name.slice(6);
-      if (this.data[0][`${currentRoute}_kode`]) {
-        return `${currentRoute}_kode`;
-      } else if (this.data[0][`${currentRoute}_ID`]) {
-        return `${currentRoute}_ID`;
-      } else {
-        return "id";
-      }
     },
     conditionDataTable() {
       const from = this.$route.name.slice(6);
@@ -608,7 +693,8 @@ export default {
         from === "tindakan" ||
         from === "lab" ||
         from === "ronsen" ||
-        from === "obat"
+        from === "obat" ||
+        from === "kamar"
       ) {
         return true;
       } else {
@@ -616,7 +702,7 @@ export default {
       }
     },
     selectType() {
-      let arrayType = ["UMUM", "BPJS", "ASURANSI/PERUSAHAAN"];
+      let arrayType = this.$store.state.masterType;
       let from = this.$route.name.slice(6).split("");
       from[0] = from[0].toUpperCase();
       from = from.join("");
@@ -625,17 +711,20 @@ export default {
         arrayType.forEach(type => {
           let flag = false;
           this.$store.state[`harga${from}`].forEach(item => {
-            if (type === item.type) {
+            if (type.name === item.type || type.status === "TIDAK AKTIF") {
               flag = true;
             }
           });
           if (flag === false) {
-            filteredType.push(type);
+            filteredType.push(type.name);
           }
         });
         return filteredType;
       } else {
-        return ["UMUM", "BPJS", "ASURANSI/PERUSAHAAN"];
+        arrayType = arrayType.map(type => {
+          return type.name;
+        });
+        return arrayType;
       }
     },
     logicFormInput() {
@@ -649,11 +738,12 @@ export default {
         return this.formInputHargaRonsen;
       } else if (this.$route.name === "Masterobat") {
         return this.formInputHargaObat;
+      } else if (this.$route.name === "Masterkamar") {
+        return this.formInputHargaKamar;
       }
     },
     getRouteName() {
-      const routeName = this.$route.name;
-      return routeName;
+      return this.$route.name;
     },
     logicPropsEditForm() {
       let from = this.$route.name.slice(6).split("");
@@ -680,13 +770,19 @@ export default {
           this.$emit(`edit${master}Success`);
         })
         .catch(error => {
-          console.log({ error });
           this.buttonAction = true;
           this.isError = true;
           const errorKey = Object.keys(
             { error }.error.response.data.messages
           )[0];
           this.errorMessage = { error }.error.response.data.messages[errorKey];
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+            this.isError = false;
+          }
         });
     },
     close() {
@@ -719,6 +815,13 @@ export default {
             { error }.error.response.data.messages
           )[0];
           const errorMessage = { error }.error.response.data.messages[errorKey];
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+            this.isError = false;
+          }
         });
     },
     detailPrice(item) {
@@ -741,6 +844,8 @@ export default {
         this.formInputHargaRonsen.ronsenKode = item.ronsen_kode;
       } else if (this.$route.name === "Masterobat") {
         this.formInputHargaObat.obatKode = item.obat_kode;
+      } else if (this.$route.name === "Masterkamar") {
+        this.formInputHargaKamar.kamarId = item.id;
       }
     },
     resetFormInput() {
@@ -771,6 +876,12 @@ export default {
         this.formInputHargaObat.type = null;
         this.formInputHargaObat.hargaBox = "0";
         this.formInputHargaObat.hargaSatuan = "0";
+      } else if (this.$route.name === "Masterkamar") {
+        this.formInputHargaKamar.kamarId = "";
+        this.formInputHargaKamar.kelas = null;
+        this.formInputHargaKamar.type = null;
+        this.formInputHargaKamar.kapasitas = "0";
+        this.formInputHargaKamar.harga = "0";
       }
       this.successCreateAlert = true;
       this.successCreateMessage = `Create Harga ${this.$route.name.slice(
@@ -819,6 +930,12 @@ export default {
         this.editFormHargaObat.type = item.type;
         this.editFormHargaObat.hargaBox = item.harga_box;
         this.editFormHargaObat.hargaSatuan = item.harga_satuan;
+      } else if (this.$route.name === "Masterkamar") {
+        this.editFormHargaKamar.id = item.id;
+        this.editFormHargaKamar.kelas = item.kelas;
+        this.editFormHargaKamar.type = item.type;
+        this.editFormHargaKamar.kapasitas = item.kapasitas;
+        this.editFormHargaKamar.harga = item.harga;
       }
     },
     logicEditAlert() {
@@ -843,3 +960,4 @@ export default {
   padding: 30px;
 }
 </style>
+

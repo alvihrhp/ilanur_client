@@ -36,7 +36,6 @@
       </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-2" @click="editItem(item)" color="#FFCC00">mdi-pencil</v-icon>
-        <v-icon @click="deleteItem(item)" color="#bb2124">mdi-delete</v-icon>
       </template>
     </v-data-table>
   </div>
@@ -50,13 +49,18 @@ export default {
     let from = this.$route.name.split("").slice(6);
     from[0] = from[0].toUpperCase();
     from = from.join("");
-    this.$store.dispatch(
-      `getHarga${from}`,
-      this.detail.item[`${this.$route.name.slice(6)}_kode`]
-    );
+    if (from === "Kamar") {
+      this.$store.dispatch(`getHarga${from}`, this.detail.item.id);
+    } else {
+      this.$store.dispatch(
+        `getHarga${from}`,
+        this.detail.item[`${this.$route.name.slice(6)}_kode`]
+      );
+    }
   },
   data() {
     return {
+      dialog: false,
       headerDoctor: [
         { text: "Type", value: "type" },
         { text: "Doctor Jasa", value: "doctor_jasa" },
@@ -137,6 +141,30 @@ export default {
           sortable: false
         }
       ],
+      headerKamar: [
+        {
+          text: "Kelas",
+          value: "kelas",
+          align: "start"
+        },
+        {
+          text: "Type",
+          value: "type"
+        },
+        {
+          text: "Kapasitas",
+          value: "kapasitas"
+        },
+        {
+          text: "Harga",
+          value: "harga"
+        },
+        {
+          text: "Actions",
+          value: "actions",
+          sortable: false
+        }
+      ],
       isError: false,
       errorMessage: "",
       buttonAction: true
@@ -159,6 +187,8 @@ export default {
           header = this.headerRonsen;
         } else if (from === "Obat") {
           header = this.headerObat;
+        } else if (from === "Kamar") {
+          header = this.headerKamar;
         }
         return {
           header,
@@ -204,10 +234,19 @@ export default {
             { error }.error.response.data.messages
           )[0];
           this.errorMessage = { error }.error.response.data.messages[errorKey];
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+            this.isError = false;
+          }
         });
     },
     close() {
+      console.log("INI CLOSE");
       this.dialog = false;
+      console.log(this.dialog);
     }
   }
 };

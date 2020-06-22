@@ -6,10 +6,7 @@
         title: 'Master Asuransi'
     }"
     ></Banner>
-    <div class="loading" v-if="masterAsuransi.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -60,17 +57,22 @@
         </v-col>
       </Formdialog>
       <Datatable
+        :key="key"
         v-bind:dataTableDetail="{
           data: masterAsuransi.data,
           header: masterAsuransi.header,
+          length: masterAsuransi.length,
           cardTitle: 'Table Asuransi',
           editDetail: editForm,
           buttonEdit: true,
-          buttonDelete: true
+          buttonDelete: true,
+          loadingData,
+          itemKey: 'master_asuransi_ID'
       }"
         v-on:inputFormEdit="inputEditAsuransi"
         v-on:editAsuransiSuccess="successEdit"
         v-on:deleteAsuransiSuccess="successDelete"
+        v-on:getData="getMasterAsuransi"
       >
         <v-col cols="6" sm="6" md="6">
           <v-text-field
@@ -110,11 +112,10 @@ export default {
     Datatable,
     Formdialog
   },
-  created() {
-    this.$store.dispatch("getMasterAsuransi");
-  },
   data() {
     return {
+      loadingData: true,
+      key: false,
       validationRules: {
         masterAsuransiNama: [v => !!v || "Nama Asuransi is required"],
         masterAsuransiHarga: [v => !!v || "Harga Asuransi is required"]
@@ -134,60 +135,62 @@ export default {
         originalID: ""
       },
       successEditAlert: false,
-      successDeleteAlert: false
+      successDeleteAlert: false,
+      header: [
+        {
+          text: "Nama Asuransi",
+          value: "master_asuransi_nama",
+          align: "start"
+        },
+        { text: "Alamat Asuransi", value: "master_asuransi_alamat" },
+        { text: "Telpon Asuransi", value: "master_asuransi_telpon" },
+        { text: "Harga Asuransi", value: "master_asuransi_harga" }
+      ]
     };
   },
   computed: {
     masterAsuransi() {
       let header = [];
       if (this.$store.state.masterAsuransi.length > 0) {
-        this.$store.state.masterAsuransi.forEach((asuransi, index) => {
-          Object.keys(asuransi).forEach(key => {
-            if (index === 0) {
-              let objectHeader = {};
-              if (
-                key === "master_asuransi_nama" ||
-                key === "master_asuransi_alamat" ||
-                key === "master_asuransi_telpon" ||
-                key === "master_asuransi_harga"
-              ) {
-                const newKey = key
-                  .slice(7)
-                  .replace("_", " ")
-                  .split("");
-                newKey[0] = newKey[0].toUpperCase();
-                newKey[9] = newKey[9].toUpperCase();
-                const headerKey = newKey.join("");
-                if (key === "master_asuransi_nama") {
-                  objectHeader["text"] = headerKey;
-                  objectHeader["value"] = key;
-                  objectHeader["align"] = "start";
-                  header.push(objectHeader);
-                } else if (key !== "master_asuransi_nama") {
-                  objectHeader["text"] = headerKey;
-                  objectHeader["value"] = key;
-                  header.push(objectHeader);
-                }
-              }
-            }
-          });
-          if (index === 0) {
-            header.push({ text: "Actions", value: "actions", sortable: false });
-          }
-        });
         return {
           data: this.$store.state.masterAsuransi,
-          header
+          header: this.header,
+          length: this.$store.state.totalMasterAsuransi
         };
       } else {
         return {
           data: [],
-          header
+          header: this.header,
+          length: 0
         };
       }
     }
   },
   methods: {
+    getMasterAsuransi(params) {
+      this.loadingData = true;
+      const newParams = {
+        page: params.page,
+        itemsPerPage: params.itemsPerPage,
+        sortBy: params.sortBy[0],
+        sortDesc: params.sortDesc[0],
+        search: params.search
+      };
+      this.$store
+        .dispatch("getMasterAsuransi", newParams)
+        .then(() => {
+          this.loadingData = false;
+          this.key = true;
+        })
+        .catch(error => {
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+          }
+        });
+    },
     resetFormInput() {
       this.formInput.masterAsuransiNama = "";
       this.formInput.masterAsuransiAlamat = "";

@@ -6,10 +6,7 @@
         background: 'distributor.jpg'
     }"
     ></Banner>
-    <div class="loading" v-if="masterDistributor.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -62,17 +59,22 @@
         </v-col>
       </Formdialog>
       <Datatable
+        :key="key"
         v-bind:dataTableDetail="{
           cardTitle: 'Table Distributor',
           data: masterDistributor.data,
           header: masterDistributor.header,
+          length: masterDistributor.length,
           editDetail: editForm,
           buttonEdit: true,
-          buttonDelete: true
+          buttonDelete: true,
+          loadingData,
+          itemKey: 'master_distributor_ID'
       }"
         v-on:inputFormEdit="inputEditDistributor"
         v-on:editDistributorSuccess="successEdit"
         v-on:deleteDistributorSuccess="successDelete"
+        v-on:getData="getMasterDistributor"
       >
         <v-col cols="6" sm="6" md="6">
           <v-text-field
@@ -119,6 +121,8 @@ export default {
   },
   data() {
     return {
+      loadingData: true,
+      key: false,
       validationRules: {
         masterDistributorNama: [v => !!v || "Nama Distributor is required"],
         masterDistributorAlamat: [v => !!v || "Alamat Distributor is required"],
@@ -137,55 +141,62 @@ export default {
         originalID: ""
       },
       successEditAlert: false,
-      successDeleteAlert: false
+      successDeleteAlert: false,
+      header: [
+        {
+          text: "Nama Distributor",
+          value: "master_distributor_nama",
+          align: "start"
+        },
+        { text: "Alamat Distributor", value: "master_distributor_alamat" },
+        { text: "Telpon Distributor", value: "master_distributor_telpon" },
+        { text: "Actions", value: "actions", sortable: false }
+      ]
     };
   },
   computed: {
     masterDistributor() {
-      let header = [];
       if (this.$store.state.masterDistributor.length > 0) {
-        this.$store.state.masterDistributor.forEach((distributor, index) => {
-          Object.keys(distributor).forEach(key => {
-            if (index === 0) {
-              let objectHeader = {};
-              if (key !== "master_distributor_ID") {
-                const newKey = key.replace("_", " ").split("");
-                newKey[0] = newKey[0].toUpperCase();
-                newKey[7] = newKey[7].toUpperCase();
-                newKey[18] = " ";
-                newKey[19] = newKey[19].toUpperCase();
-                const headerKey = newKey.join("");
-
-                if (key === "master_distributor_nama") {
-                  objectHeader["text"] = headerKey;
-                  objectHeader["value"] = key;
-                  objectHeader["align"] = "start";
-                  header.push(objectHeader);
-                } else if (key !== "master_distributor_nama") {
-                  objectHeader["text"] = headerKey;
-                  objectHeader["value"] = key;
-                  header.push(objectHeader);
-                }
-              }
-            }
-          });
-          if (index === 0) {
-            header.push({ text: "Actions", value: "actions", sortable: false });
-          }
-        });
         return {
           data: this.$store.state.masterDistributor,
-          header
+          header: this.header,
+          length: this.$store.state.totalMasterDistributor
         };
       } else {
         return {
           data: [],
-          header
+          header: this.header,
+          length: 0
         };
       }
     }
   },
   methods: {
+    getMasterDistributor(params) {
+      this.loadingData = true;
+      const newParams = {
+        page: params.page,
+        itemsPerPage: params.itemsPerPage,
+        sortBy: params.sortBy[0],
+        sortDesc: params.sortDesc[0],
+        search: params.search
+      };
+      this.$store
+        .dispatch("getMasterDistributor", newParams)
+        .then(() => {
+          this.loadingData = false;
+          this.key = true;
+        })
+        .catch(error => {
+          console.log({ error });
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+          }
+        });
+    },
     resetFormInput() {
       this.formInput.masterDistributorNama = "";
       this.formInput.masterDistributorAlamat = "";

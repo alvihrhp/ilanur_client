@@ -6,10 +6,7 @@
         background: 'tindakan.jpg'
     }"
     ></Banner>
-    <div class="loading" v-if="masterTindakan.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -57,7 +54,7 @@
             label="Tipe Pembayaran"
             v-model="formInput.typeHarga"
             :rules="validationForm.typeHarga"
-            :items="selectFormTypeHarga"
+            :items="masterType"
             required
           ></v-select>
         </v-col>
@@ -81,15 +78,22 @@
         </v-col>
       </Formdialog>
       <Datatable
+        :key="key"
         v-bind:dataTableDetail="{
           cardTitle: 'Table Tindakan',
           data: masterTindakan.data,
           header: masterTindakan.header,
-          editDetail: editForm
+          length: masterTindakan.length,
+          editDetail: editForm,
+          buttonEdit: true,
+          buttonDelete: true,
+          itemKey: 'tindakan_kode',
+          loadingData
       }"
         v-on:inputFormEdit="inputEditTindakan"
         v-on:editTindakanSuccess="successEdit"
         v-on:deleteTindakanSuccess="successDelete"
+        v-on:getData="getMasterTindakan"
       >
         <v-col cols="6" md="12" sm="12">
           <v-text-field
@@ -115,11 +119,9 @@ export default {
     Datatable,
     Formdialog
   },
-  created() {
-    this.$store.dispatch("getMasterTindakan");
-  },
   data() {
     return {
+      loadingData: true,
       validationForm: {
         tindakanKode: [v => !!v || "Tindakan Kode is required"],
         tindakanNama: [v => !!v || "Tindakan Nama is required"],
@@ -136,39 +138,76 @@ export default {
         tindakanJasaAOperator: "0",
         tindakanJasaParamedis: "0"
       },
-      selectFormTypeHarga: ["UMUM", "BPJS", "ASURANSI/PERUSAHAAN"],
       successCreateAlert: false,
       editForm: {
         tindakanNama: "",
         originalID: ""
       },
       successEditAlert: false,
-      successDeleteAlert: false
+      successDeleteAlert: false,
+      header: [
+        { text: "Tindakan Kode", value: "tindakan_kode", align: "start" },
+        { text: "Tindakan Nama", value: "tindakan_nama" },
+        { text: "Actions", value: "actions", sortable: false },
+        { text: "", value: "data-table-expand" }
+      ],
+      key: false
     };
   },
   computed: {
     masterTindakan() {
-      let header = [];
       if (this.$store.state.masterTindakan.length > 0) {
-        header = [
-          { text: "Tindakan Kode", value: "tindakan_kode", align: "start" },
-          { text: "Tindakan Nama", value: "tindakan_nama" },
-          { text: "Actions", value: "actions", sortable: false },
-          { text: "", value: "data-table-expand" }
-        ];
         return {
           data: this.$store.state.masterTindakan,
-          header
+          header: this.header,
+          length: this.$store.state.totalMasterTindakan
         };
       } else {
         return {
           data: [],
-          header
+          header: this.header,
+          length: 0
         };
       }
+    },
+    masterType() {
+      const type = this.$store.state.masterType
+        .map(data => {
+          if (data.status === "AKTIF") {
+            return data.name;
+          }
+        })
+        .filter(data => {
+          return data !== undefined;
+        });
+      return type;
     }
   },
   methods: {
+    getMasterTindakan(params) {
+      this.loadingData = true;
+      const newParams = {
+        page: params.page,
+        itemsPerPage: params.itemsPerPage,
+        sortBy: params.sortBy[0],
+        sortDesc: params.sortDesc[0],
+        search: params.search
+      };
+      this.$store
+        .dispatch("getMasterTindakan", newParams)
+        .then(() => {
+          this.loadingData = false;
+          this.key = true;
+        })
+        .catch(error => {
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+          }
+        });
+    },
     resetFormInput() {
       this.formInput.tindakanKode = "";
       this.formInput.tindakanNama = "";

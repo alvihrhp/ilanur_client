@@ -6,10 +6,7 @@
         title: 'Master Ronsen'
     }"
     ></Banner>
-    <div class="loading" v-if="masterRonsen.data.length === 0">
-      <img src="../assets/loading.gif" />
-    </div>
-    <div class="data-table-container" v-else>
+    <div class="data-table-container">
       <v-alert
         type="success"
         class="success-create-alert"
@@ -57,7 +54,7 @@
             label="Tipe Pembayaran"
             v-model="formInput.typeHarga"
             :rules="validationRules.typeHarga"
-            :items="selectTypeHarga"
+            :items="masterType"
             required
           ></v-select>
         </v-col>
@@ -66,15 +63,22 @@
         </v-col>
       </Formdialog>
       <Datatable
+        :key="key"
         v-bind:dataTableDetail="{
         cardTitle: 'Table Ronsen',
         header: masterRonsen.header,
         data: masterRonsen.data,
-        editDetail: editForm
+        length: masterRonsen.length,
+        editDetail: editForm,
+        buttonEdit: true,
+        buttonDelete: true,
+        loadingData,
+        itemKey: 'ronsen_kode',
       }"
         v-on:inputFormEdit="inputEditRonsen"
         v-on:editRonsenSuccess="successEdit"
         v-on:deleteRonsenSuccess="successDelete"
+        v-on:getData="getMasterRonsen"
       >
         <v-col cols="12" md="12" sm="12">
           <v-text-field
@@ -100,11 +104,10 @@ export default {
     Datatable,
     Formdialog
   },
-  created() {
-    this.$store.dispatch("getMasterRonsen");
-  },
   data() {
     return {
+      loadingData: true,
+      key: false,
       validationRules: {
         ronsenKode: [v => !!v || "Ronsen Kode is required"],
         ronsenNamaPemeriksaan: [v => !!v || "Nama Pemeriksaan is required"],
@@ -123,32 +126,69 @@ export default {
         originalID: ""
       },
       successEditAlert: false,
-      successDeleteAlert: false
+      successDeleteAlert: false,
+      header: [
+        { text: "Ronsen Kode", value: "ronsen_kode", align: "start" },
+        { text: "Ronsen Nama Pemeriksaan", value: "ronsen_nama_pemeriksaan" },
+        { text: "Actions", value: "actions", sortable: false },
+        { text: "", value: "data-table-expand" }
+      ]
     };
   },
   computed: {
     masterRonsen() {
-      let header = [];
       if (this.$store.state.masterRonsen.length > 0) {
-        header = [
-          { text: "Ronsen Kode", value: "ronsen_kode", align: "start" },
-          { text: "Ronsen Nama Pemeriksaan", value: "ronsen_nama_pemeriksaan" },
-          { text: "Actions", value: "actions", sortable: false },
-          { text: "", value: "data-table-expand" }
-        ];
         return {
           data: this.$store.state.masterRonsen,
-          header
+          header: this.header,
+          length: this.$store.state.totalMasterRonsen
         };
       } else {
         return {
           data: [],
-          header
+          header: this.header,
+          length: 0
         };
       }
+    },
+    masterType() {
+      const type = this.$store.state.masterType
+        .map(data => {
+          if (data.status === "AKTIF") {
+            return data.name;
+          }
+        })
+        .filter(data => {
+          return data !== undefined;
+        });
+      return type;
     }
   },
   methods: {
+    getMasterRonsen(params) {
+      this.loadingData = true;
+      const newParams = {
+        page: params.page,
+        itemsPerPage: params.itemsPerPage,
+        sortBy: params.sortBy[0],
+        sortDesc: params.sortDesc[0],
+        search: params.search
+      };
+      this.$store
+        .dispatch("getMasterRonsen", newParams)
+        .then(() => {
+          this.loadingData = false;
+          this.key = true;
+        })
+        .catch(error => {
+          const errorStatus = { error }.error.response.status;
+          if (errorStatus === 401) {
+            this.$store.commit("TOKEN_UPDATE");
+            this.$router.replace("/login");
+            localStorage.clear();
+          }
+        });
+    },
     resetFormInput() {
       this.formInput.ronsenKode = "";
       this.formInput.ronsenNamaPemeriksaan = "";
