@@ -1,5 +1,6 @@
 <template>
   <div class="master-lab">
+    <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{
         title: 'Master Lab',
@@ -27,9 +28,11 @@
       >Delete Lab Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+        from: 'Lab',
         formInput,
         btnIcon: 'mdi-eyedropper-variant',
-        btnTitle: 'Create Lab'
+        btnTitle: 'Create Lab',
+        createAction: 'createMasterLab'
       }"
         v-on:createLabSuccess="resetFormInput"
       >
@@ -65,6 +68,7 @@
       <Datatable
         :key="key"
         v-bind:dataTableDetail="{
+          from: 'Lab',
           data: masterLab.data,
           header: masterLab.header,
           length: masterLab.length,
@@ -73,7 +77,18 @@
           buttonEdit: true,
           buttonDelete: true,
           itemKey: 'lab_kode',
-          loadingData
+          loadingData,
+          isExpanded: true,
+          buttonExpand: true,
+          editAction: 'editMasterLab',
+          deleteAction: 'deleteMasterLab',
+          tableExpandFormInput: 'formInputHargaLab',
+          tableExpandEditForm: 'editFormHargaLab',
+          btnExpandTitle: 'Create Price',
+          tableExpandFor: 'hargaLab',
+          tableExpandHeader: 'headerLab',
+          tableExpandCreate: 'createHargaLab',
+          tableExpandUpdate: 'editHargaLab',
       }"
         v-on:inputFormEdit="inputEditLab"
         v-on:editLabSuccess="successEdit"
@@ -94,6 +109,7 @@
 </template>
 
 <script>
+import Toolbar from "../components/Toolbar";
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
 import Formdialog from "../components/Formdialog";
@@ -102,7 +118,8 @@ export default {
   components: {
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
+    Toolbar
   },
   data() {
     return {

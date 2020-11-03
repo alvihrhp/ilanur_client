@@ -25,9 +25,11 @@
       >Edit Lantai Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+          from: 'Lantai',
           formInput,
           btnTitle: 'Create Lantai',
-          btnIcon: 'mdi-elevation-rise'
+          btnIcon: 'mdi-elevation-rise',
+          createAction: 'createMasterLantai'
       }"
         v-on:createLantaiSuccess="resetFormInput"
       >
@@ -42,12 +44,15 @@
       </Formdialog>
       <Datatable
         v-bind:dataTableDetail="{
+          from: 'Lantai',
           header: masterLantai.header,
           data: masterLantai.data,
           cardTitle: 'Table Lantai',
           editDetail: editForm,
           buttonEdit: true,
-          buttonDelete: false
+          buttonDelete: false,
+          isExpanded: false,
+          editAction: 'editMasterLantai',
       }"
         v-on:inputFormEdit="inputEditLantai"
         v-on:editLantaiSuccess="editSuccess"

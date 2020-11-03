@@ -1,5 +1,6 @@
 <template>
   <div class="master-perusahaan">
+    <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{
         background: 'perusahaan.jpg',
@@ -27,9 +28,11 @@
       >Delete Perusahaan Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+        from: 'Perusahaan',
         formInput,
         btnTitle: 'Create Perusahaan',
-        btnIcon: 'mdi-home-modern'
+        btnIcon: 'mdi-home-modern',
+        createAction: 'createMasterPerusahaan'
       }"
         v-on:createPerusahaanSuccess="resetFormInput"
       >
@@ -59,6 +62,7 @@
       <Datatable
         :key="key"
         v-bind:dataTableDetail="{
+        from: 'Perusahaan',
         data: masterPerusahaan.data,
         header: masterPerusahaan.header,
         length: masterPerusahaan.length,
@@ -68,6 +72,9 @@
         buttonDelete: true,
         loadingData,
         itemKey: 'master_perusahaan_ID',
+        isExpanded: false,
+        editAction: 'editMasterPerusahaan',
+        deleteAction: 'deleteMasterPerusahaan',
       }"
         v-on:inputFormEdit="inputEditPerusahaan"
         v-on:editPerusahaanSuccess="successEdit"
@@ -102,6 +109,7 @@
 </template>
 
 <script>
+import Toolbar from "../components/Toolbar";
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
 import Formdialog from "../components/Formdialog";
@@ -110,7 +118,8 @@ export default {
   components: {
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
+    Toolbar
   },
   data() {
     return {

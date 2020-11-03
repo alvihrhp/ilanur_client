@@ -1,5 +1,6 @@
 <template>
   <div class="master-asuransi">
+    <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{
         background: 'asuransi.jpg',
@@ -27,9 +28,11 @@
       >Delete Asuransi Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+        from: 'Asuransi',
         formInput,
         btnTitle: 'Create Asuransi',
-        btnIcon: 'mdi-umbrella'
+        btnIcon: 'mdi-umbrella',
+        createAction: 'createMasterAsuransi'
       }"
         v-on:createAsuransiSuccess="resetFormInput"
       >
@@ -59,6 +62,7 @@
       <Datatable
         :key="key"
         v-bind:dataTableDetail="{
+          from: 'Asuransi',
           data: masterAsuransi.data,
           header: masterAsuransi.header,
           length: masterAsuransi.length,
@@ -67,7 +71,10 @@
           buttonEdit: true,
           buttonDelete: true,
           loadingData,
-          itemKey: 'master_asuransi_ID'
+          itemKey: 'master_asuransi_ID',
+          isExpanded: false,
+          editAction: 'editMasterAsuransi',
+          deleteAction: 'deleteMasterAsuransi',
       }"
         v-on:inputFormEdit="inputEditAsuransi"
         v-on:editAsuransiSuccess="successEdit"
@@ -102,6 +109,7 @@
 </template>
 
 <script>
+import Toolbar from "../components/Toolbar";
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
 import Formdialog from "../components/Formdialog";
@@ -110,7 +118,8 @@ export default {
   components: {
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
+    Toolbar
   },
   data() {
     return {

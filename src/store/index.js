@@ -5,8 +5,7 @@ import router from '../router'
 
 Vue.use(Vuex)
 
-// const baseURL = 'http://hisapi.fsolteam.com/public'
-const baseURL = "http://localhost:8080"
+const baseURL = 'http://hisapi.fsolteam.com/public'
 
 export default new Vuex.Store({
   state: {
@@ -38,8 +37,35 @@ export default new Vuex.Store({
     masterUser: [],
     totalMasterUser: 0,
     masterType: [],
-    totalMasterType: 0,
-    masterLantai: []
+    masterLantai: [],
+    masterDistributorObat: [],
+    totalMasterDistributorObat: 0,
+    masterDistributorObatFilter: [],
+    totalMasterDistributorObatFilter: 0,
+    masterTypeObat: [],
+    totalMasterTypeObat: 0,
+    listGudangAll: [],
+    totalListGudangAll: 0,
+    listNewGudang: [],
+    totalListNewGudang: 0,
+    pembelianGudang: [],
+    totalPembelianGudang: 0,
+    pembelianGudangObat: [],
+    gudangRr: [],
+    totalGudangRr: 0,
+    gudangRrObat: [],
+    gudangRetur: [],
+    gudangReturObat: [],
+    permintaanFarmasi: [],
+    totalPermintaanFarmasi: [],
+    permintaanObatFarmasi: [],
+    farmasiAll: [],
+    totalFarmasiAll: 0,
+    farmasiNew: [],
+    totalFarmasiNew: 0,
+    farmasiOrder: [],
+    totalFarmasiOrder: 0,
+    farmasiObatOrder: []
   },
   mutations: {
     LOGIN_SUCCESS(state) {
@@ -367,9 +393,6 @@ export default new Vuex.Store({
         return type;
       })
     },
-    FILL_TOTAL_TYPE(state, data) {
-      state.masterType = data;
-    },
     FILL_MASTER_LANTAI(state, data) {
       state.masterLantai = data;
     },
@@ -383,6 +406,232 @@ export default new Vuex.Store({
         }
         return lantai;
       })
+    },
+    FILL_MASTER_DISTRIBUTOR_OBAT(state, data) {
+      state.masterDistributorObat = data;
+    },
+    INSERT_MASTER_DISTRIBUTOR_OBAT(state, data) {
+      data.forEach(distributor => {
+        state.masterDistributorObat.push(distributor);
+      })
+    },
+    EDIT_MASTER_DISTRIBUTOR_OBAT(state, data) {
+      state.masterDistributorObat = state.masterDistributorObat.map(distributorObat => {
+        if (distributorObat.distributor_obat_kode === data.distributor_obat_kode) {
+          const updatedObject = {
+            ...data,
+            master_distributor_nama: distributorObat.master_distributor_nama,
+            obat_nama: distributorObat.obat_nama
+          }
+          return updatedObject
+        }
+        return distributorObat
+      })
+    },
+    DELETE_MASTER_DISTRIBUTOR_OBAT(state, data) {
+      state.masterDistributorObat = state.masterDistributorObat.filter(distributorObat => {
+        return distributorObat.distributor_obat_kode != data.distributor_obat_kode;
+      })
+    },
+    FILL_MASTER_DISTRIBUTOR_OBAT_FILTER(state, data) {
+      state.masterDistributorObatFilter = data;
+    },
+    FILL_TOTAL_DISTRIBUTOR_OBAT(state, data) {
+      state.totalMasterDistributorObat = data;
+    },
+    FILL_TOTAL_DISTRIBUTOR_OBAT_FILTER(state, data) {
+      state.totalMasterDistributorObatFilter = data;
+    },
+    FILL_MASTER_TYPE_OBAT(state, data) {
+      state.masterTypeObat = data;
+    },
+    FILL_TOTAL_TYPE_OBAT(state, data) {
+      state.totalMasterTypeObat = data;
+    },
+    INSERT_MASTER_TYPE_OBAT(state, data) {
+      state.masterTypeObat.push(data);
+    },
+    EDIT_MASTER_TYPE_OBAT(state, data) {
+      const newMasterTypeObat = state.masterTypeObat.map(item => {
+        if (data.realName === item.master_tipe_obat_nama) {
+          return {
+            master_tipe_obat_nama: data.masterTipeObatNama,
+            master_tipe_obat_status: data.masterTipeObatStatus
+          }
+        }
+        return item;
+      })
+      state.masterTypeObat = newMasterTypeObat
+    },
+    FILL_LIST_GUDANG_ALL(state, data) {
+      state.listGudangAll = data;
+    },
+    EDIT_LIST_GUDANG_ALL(state, data) {
+      state.listGudangAll = state.listGudangAll.map(gudang => {
+        if (gudang.gudang_ID === data.gudang_ID) {
+          const newGudang = {
+            ...data,
+            obat_nama: gudang.obat_nama
+          }
+          return newGudang
+        }
+        return gudang;
+      })
+    },
+    FILL_TOTAL_GUDANG_ALL(state, data) {
+      state.totalListGudangAll = data;
+    },
+    FILL_LIST_NEW_GUDANG(state, data) {
+      state.listNewGudang = data;
+    },
+    EDIT_LIST_NEW_GUDANG(state, data) {
+      state.listNewGudang = state.listNewGudang.map(gudang => {
+        if (gudang.gudang_ID === data.gudang_ID) {
+          const newGudang = {
+            ...data,
+            obat_nama: gudang.obat_nama
+          }
+          return newGudang
+        }
+        return gudang;
+      })
+    },
+    FILL_TOTAL_NEW_GUDANG(state, data) {
+      state.totalListNewGudang = data;
+    },
+    FILL_PEMBELIAN_GUDANG(state, data) {
+      state.pembelianGudang = data;
+    },
+    INSERT_PEMBELIAN_GUDANG(state, data) {
+      state.pembelianGudang.push(data);
+    },
+    EDIT_PEMBELIAN_GUDANG(state, data) {
+      state.pembelianGudang = state.pembelianGudang.map(pembelian => {
+        if (pembelian.gudang_po_ID === data.gudang_po_ID) {
+          const newObject = {
+            ...data,
+            master_distributor_nama: pembelian.master_distributor_nama
+          };
+          return newObject;
+        }
+        return pembelian;
+      })
+    },
+    FILL_TOTAL_PEMBELIAN_GUDANG(state, data) {
+      state.totalPembelianGudang = data;
+    },
+    FILL_PEMBELIAN_GUDANG_OBAT(state, data) {
+      state.pembelianGudangObat = data;
+    },
+    EDIT_PEMBELIAN_GUDANG_OBAT(state, data) {
+      state.pembelianGudangObat = state.pembelianGudangObat.map(pembelian => {
+        if (pembelian.gudang_po_obat_ID === data.gudang_po_obat_ID) {
+          const newObject = {
+            ...data,
+            obat_nama: pembelian.obat_nama,
+            gudang_po_obat_price: pembelian.gudang_po_obat_price,
+            gudang_po_obat_status: pembelian.gudang_po_obat_status
+          }
+          return newObject;
+        }
+        return pembelian;
+      })
+    },
+    FILL_LIST_GUDANG_RR(state, data) {
+      state.gudangRr = data;
+    },
+    FILL_TOTAL_GUDANG_RR(state, data) {
+      state.totalGudangRr = data;
+    },
+    FILL_LIST_GUDANG_RR_OBAT(state, data) {
+      console.log(data);
+      state.gudangRrObat = data;
+    },
+    INSERT_GUDANG_RR(state, data) {
+      state.gudangRr.push(data);
+    },
+    FILL_LIST_GUDANG_RETUR(state, data) {
+      state.gudangRetur = data;
+    },
+    FILL_LIST_GUDANG_RETUR_OBAT(state, data) {
+      state.gudangReturObat = data;
+    },
+    INSERT_GUDANG_RETUR(state, data) {
+      state.gudangRetur.push(data);
+    },
+    FILL_PERMINTAAN_FARMASI(state, data) {
+      state.permintaanFarmasi = data;
+    },
+    FILL_TOTAL_PERMINTAAN_FARMASI(state, data) {
+      state.totalPermintaanFarmasi = data;
+    },
+    EDIT_PERMINTAAN_FARMASI(state, data) {
+      const newPermintaanFarmasi = state.permintaanFarmasi.map(item => {
+        if (data.farmasi_order_ID === item.farmasi_order_ID) {
+          console.log(item);
+          return {
+            ...item,
+            farmasi_order_status: data.farmasi_order_status
+          }
+        }
+        return item;
+      })
+      state.permintaanFarmasi = newPermintaanFarmasi;
+    },
+    FILL_PERMINTAAN_OBAT_FARMASI(state, data) {
+      state.permintaanObatFarmasi = data;
+    },
+    EDIT_PERMINTAAN_OBAT_FARMASI(state, data) {
+      const newPermintaanObatFarmasi = state.permintaanObatFarmasi.map(item => {
+        if (data.farmasi_order_obat_ID === item.farmasi_order_obat_ID) {
+          return {
+            ...item,
+            farmasi_order_obat_qty: data.farmasi_order_obat_qty,
+            farmasi_order_obat_status: data.farmasi_order_obat_status,
+            farmasi_order_obat_total: data.farmasi_order_obat_total
+          }
+        }
+        return item;
+      })
+      state.permintaanObatFarmasi = newPermintaanObatFarmasi;
+    },
+    FILL_FARMASI_ALL(state, data) {
+      state.farmasiAll = data;
+    },
+    FILL_TOTAL_FARMASI_ALL(state, data) {
+      state.totalFarmasiAll = data;
+    },
+    EDIT_FARMASI_ALL(state, data) {
+      const newFarmasiAll = state.farmasiAll.map(farmasi => {
+        if (farmasi.farmasi_ID === data.farmasi_ID) {
+          return {
+            ...farmasi,
+            farmasi_stock: data.farmasi_stock,
+            farmasi_batch_number: data.farmasi_batch_number,
+            farmasi_satuan: data.farmasi_satuan
+          }
+        }
+        return farmasi;
+      })
+      state.farmasiAll = newFarmasiAll;
+    },
+    FILL_FARMASI_NEW(state, data) {
+      state.farmasiNew = data;
+    },
+    FILL_TOTAL_FARMASI_NEW(state, data) {
+      state.totalFarmasiNew = data;
+    },
+    FILL_FARMASI_ORDER(state, data) {
+      state.farmasiOrder = data;
+    },
+    FILL_TOTAL_FARMASI_ORDER(state, data) {
+      state.totalFarmasiOrder = data;
+    },
+    INSERT_FARMASI_ORDER(state, data) {
+      state.farmasiOrder.push(data);
+    },
+    FILL_FARMASI_OBAT_ORDER(state, data) {
+      state.farmasiObatOrder = data;
     }
   },
   actions: {
@@ -1042,7 +1291,6 @@ export default new Vuex.Store({
     getMasterPerusahaan(context, query) {
       axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
       const token = localStorage.getItem('token');
-      console.log(query);
       return axios.get(`${baseURL}/perusahaan`, {
         headers: {
           'Content-Type': 'application/json',
@@ -1108,7 +1356,6 @@ export default new Vuex.Store({
         }
       })
         .then(response => {
-          // console.log(response);
           context.commit('FILL_MASTER_ASURANSI', response.data.asuransi);
           context.commit('FILL_TOTAL_ASURANSI', response.data.totalRows);
           return;
@@ -1321,7 +1568,6 @@ export default new Vuex.Store({
         headers: { 'Content-Type': 'application/json', 'token': token }
       })
         .then(response => {
-          console.log(response.data);
           response.data.originalName = type.originalName;
           context.commit('EDIT_MASTER_TYPE', response.data);
           return;
@@ -1359,6 +1605,550 @@ export default new Vuex.Store({
       return axios.put(`${baseURL}/lantai/${lantai.originalLantai}`, lantai, { headers: { 'Content-Type': 'application/json', 'token': token } })
         .then(response => {
           context.commit('EDIT_MASTER_LANTAI', response.data);
+          return;
+        })
+    },
+    getMasterDistributorObat(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/distributorobat`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_MASTER_DISTRIBUTOR_OBAT', response.data.distributorObat);
+          context.commit('FILL_TOTAL_DISTRIBUTOR_OBAT', response.data.totalRows);
+          return;
+        })
+    },
+    createMasterDistributorObat(context, distributorObat) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.post(`${baseURL}/distributorobat`, distributorObat, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token
+        }
+      })
+        .then(response => {
+          context.commit('INSERT_MASTER_DISTRIBUTOR_OBAT', response.data.selected);
+          return;
+        })
+    },
+    editMasterDistributorObat(context, distributorObat) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.put(`${baseURL}/distributorobat/${distributorObat.distributorObatKode}`, {
+        'harga': distributorObat.harga
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token
+        }
+      })
+        .then(response => {
+          context.commit('EDIT_MASTER_DISTRIBUTOR_OBAT', response.data);
+          return;
+        })
+    },
+    deleteMasterDistributorObat(context, distributorObat) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.delete(`${baseURL}/distributorobat/${distributorObat.distributor_obat_kode}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token
+        }
+      })
+        .then(response => {
+          context.commit('DELETE_MASTER_DISTRIBUTOR_OBAT', distributorObat);
+          return;
+        })
+    },
+    getMasterDistributorObatFilter(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/distributorobat/filter`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_MASTER_DISTRIBUTOR_OBAT_FILTER', response.data.distributorObat);
+          context.commit('FILL_TOTAL_DISTRIBUTOR_OBAT_FILTER', response.data.totalRows);
+          return;
+        })
+    },
+    getMasterTypeObat(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/typeobat`, {
+        headers: {
+          'Content-Type': 'application/json',
+          token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_MASTER_TYPE_OBAT', response.data);
+          context.commit('FILL_TOTAL_TYPE_OBAT', response.data.length);
+          return;
+        })
+    },
+    createMasterTypeObat(context, typeObat) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.post(`${baseURL}/typeobat`, {
+        master_tipe_obat_nama: typeObat.masterTipeObatNama,
+        master_tipe_obat_status: typeObat.masterTipeObatStatus
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          token
+        }
+      })
+        .then(response => {
+          context.commit('INSERT_MASTER_TYPE_OBAT', response.data.data);
+          return;
+        })
+    },
+    editMasterTypeObat(context, typeObat) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      const edited = {
+        master_tipe_obat_nama: typeObat.masterTypeObatNama,
+        master_tipe_obat_status: typeObat.masterTypeObatStatus
+      }
+      const params = encodeURI(typeObat.realName);
+      return axios.put(`${baseURL}/typeobat/${params}`, edited, {
+        headers: {
+          'Content-Type': 'application/json',
+          token
+        }
+      })
+        .then(response => {
+          context.commit('EDIT_MASTER_TYPE_OBAT', typeObat);
+          return;
+        })
+    },
+    getListGudangAll(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/gudang`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_LIST_GUDANG_ALL', response.data.gudang);
+          context.commit('FILL_TOTAL_GUDANG_ALL', response.data.totalRows);
+          return;
+        })
+    },
+    editListGudangAll(context, gudang) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.put(`${baseURL}/gudang/${gudang.gudangId}`, gudang, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+        }
+      })
+        .then(response => {
+          context.commit('EDIT_LIST_GUDANG_ALL', response.data);
+          return;
+        })
+    },
+    getListNewGudang(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/gudang/new`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_LIST_NEW_GUDANG', response.data.gudang);
+          context.commit('FILL_TOTAL_NEW_GUDANG', response.data.totalRows);
+          return;
+        })
+    },
+    editListNewGudang(context, gudang) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.put(`${baseURL}/gudang/${gudang.gudangId}`, gudang, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+        }
+      })
+        .then(response => {
+          context.commit('EDIT_LIST_NEW_GUDANG', response.data);
+          return;
+        })
+    },
+    getPembelianGudang(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/gudangpo`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_PEMBELIAN_GUDANG', response.data.gudangPo);
+          context.commit('FILL_TOTAL_PEMBELIAN_GUDANG', response.data.totalRows);
+          return;
+        })
+    },
+    createPembelianGudang(context, pembelian) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.post(`${baseURL}/gudangpo`, pembelian,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'token': token,
+          }
+        })
+        .then(response => {
+          context.commit('INSERT_PEMBELIAN_GUDANG', response.data);
+          return;
+        })
+    },
+    editPembelianGudang(context, pembelian) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.put(`${baseURL}/gudangpo/${pembelian.poId}`, pembelian, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+        }
+      })
+        .then(response => {
+          context.commit('EDIT_PEMBELIAN_GUDANG', response.data);
+          return;
+        })
+    },
+    getPembelianGudangObat(context, id) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/gudangpo/${id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+        }
+      })
+        .then(response => {
+          context.commit('FILL_PEMBELIAN_GUDANG_OBAT', response.data);
+          return;
+        })
+    },
+    editPembelianGudangObat(context, pembelianGudangObat) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.put(`${baseURL}/gudangpoobat/${pembelianGudangObat.id}`, pembelianGudangObat, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+        }
+      })
+        .then(response => {
+          context.commit('EDIT_PEMBELIAN_GUDANG_OBAT', response.data);
+          return;
+        })
+    },
+    getListGudangRr(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/gudangrr/datapo/${query.poId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_LIST_GUDANG_RR', response.data);
+          return;
+        })
+    },
+    getGudangRrObat(context, rrId) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/gudangrr/${rrId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token
+        }
+      })
+        .then(response => {
+          context.commit('FILL_LIST_GUDANG_RR_OBAT', response.data);
+          return
+        })
+    },
+    createGudangRr(context, formInput) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      const poId = formInput.selected[0].gudang_po_ID;
+      const selected = formInput.selected.map(data => {
+        return {
+          "obat_kode": data.obat_kode,
+          "gudangRrObatQuantity": data.gudangRrQuantity,
+          "harga_obat": data.gudang_po_obat_price
+        }
+      })
+      return axios.post(`${baseURL}/gudangrr`, {
+        "gudang_po_ID": poId,
+        selected
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          "token": token
+        }
+      })
+        .then(response => {
+          console.log(response.data);
+          context.commit('INSERT_GUDANG_RR', response.data.data);
+          return;
+        })
+    },
+    getListGudangRetur(context, poId) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/gudangretur/datapo/${poId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+        }
+      })
+        .then(response => {
+          context.commit('FILL_LIST_GUDANG_RETUR', response.data);
+          return;
+        })
+    },
+    getGudangReturObat(context, returId) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/gudangretur/${returId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token
+        }
+      })
+        .then(response => {
+          context.commit('FILL_LIST_GUDANG_RETUR_OBAT', response.data);
+          return;
+        })
+    },
+    createGudangRetur(context, formInput) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      const poId = formInput.selected[0].gudang_po_ID;
+      const selected = formInput.selected.map(data => {
+        return {
+          "obat_kode": data.obat_kode,
+          "gudangReturObatQuantity": data.gudangReturObatQuantity,
+          "harga_obat": data.gudang_po_obat_price,
+          'gudangReturObatTotal': data.gudangReturObatTotal
+        }
+      });
+      return axios.post(`${baseURL}/gudangretur`, {
+        gudang_po_ID: poId,
+        selected
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token
+        }
+      })
+        .then(response => {
+          context.commit('INSERT_GUDANG_RETUR', response.data.data);
+          return;
+        })
+    },
+    getPermintaanFarmasi(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/farmasiorder/status/PENDING`, {
+        headers: {
+          'Content-Type': 'application/json',
+          token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_PERMINTAAN_FARMASI', response.data.farmasiorder);
+          context.commit('FILL_TOTAL_PERMINTAAN_FARMASI', response.data.totalRows);
+          return;
+        })
+    },
+    editPermintaanFarmasi(context, permintaanFarmasi) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.put(`${baseURL}/farmasiorder/${permintaanFarmasi.inputtedId}`, {
+        farmasi_order_status: permintaanFarmasi.farmasiOrderStatus
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          token
+        }
+      })
+        .then(response => {
+          console.log(response);
+          context.commit('EDIT_PERMINTAAN_FARMASI', response.data);
+          return;
+        })
+    },
+    getPermintaanObatFarmasi(context, farmasiOrderId) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      const params = {
+        page: 1,
+        itemsPerPage: 10,
+        search: '',
+        sortBy: undefined,
+        sortDesc: undefined
+      }
+      return axios.get(`${baseURL}/farmasiorder/obat/${farmasiOrderId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          token,
+          ...params
+        }
+      })
+        .then(response => {
+          context.commit('FILL_PERMINTAAN_OBAT_FARMASI', response.data.data);
+          return;
+        })
+    },
+    editPermintaanObatFarmasi(context, permintaanObatFarmasi) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.put(`${baseURL}/farmasiorderobat/${permintaanObatFarmasi.id}`, {
+        farmasi_order_obat_qty: permintaanObatFarmasi.farmasiOrderObatQty,
+        farmasi_order_obat_price: permintaanObatFarmasi.farmasiOrderObatPrice
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          token
+        }
+      })
+        .then(response => {
+          context.commit('EDIT_PERMINTAAN_OBAT_FARMASI', response.data);
+          return;
+        })
+    },
+    getFarmasiAll(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/farmasi`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_FARMASI_ALL', response.data.farmasi);
+          context.commit('FILL_TOTAL_FARMASI_ALL', response.data.totalRows);
+          return;
+        })
+    },
+    editFarmasiAll(context, farmasiAll) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.put(`${baseURL}/farmasi/${farmasiAll.farmasiId}`, {
+        farmasiStock: farmasiAll.farmasiStock,
+        farmasiSatuan: farmasiAll.farmasiSatuan,
+        farmasiBatchNumber: farmasiAll.farmasiBatchNumber
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          token,
+        }
+      })
+        .then(response => {
+          context.commit('EDIT_FARMASI_ALL', response.data);
+          return;
+        })
+    },
+    getFarmasiNew(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/farmasi/new`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_FARMASI_NEW', response.data.farmasi);
+          context.commit('FILL_TOTAL_FARMASI_NEW', response.data.totalRows);
+          return;
+        })
+    },
+    getFarmasiOrder(context, query) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.get(`${baseURL}/farmasiorder`, {
+        headers: {
+          'Content-Type': 'application/json',
+          token,
+          ...query
+        }
+      })
+        .then(response => {
+          context.commit('FILL_FARMASI_ORDER', response.data.farmasiorder);
+          context.commit('FILL_TOTAL_FARMASI_ORDER', response.data.totalRows);
+          return;
+        })
+    },
+    createFarmasiOrder(context, farmasiOrder) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      return axios.post(`http://hisapi.fsolteam.com/public/farmasiorder`, farmasiOrder, {
+        headers: {
+          'Content-Type': 'application/json',
+          token
+        }
+      })
+        .then(response => {
+          context.commit('INSERT_FARMASI_ORDER', response.data);
+          return;
+        })
+    },
+    getFarmasiObatOrder(context, farmasiOrderId) {
+      axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+      const token = localStorage.getItem('token');
+      const params = {
+        page: 1,
+        itemsPerPage: 10,
+        search: '',
+        sortBy: undefined,
+        sortDesc: undefined
+      }
+      return axios.get(`${baseURL}/farmasiorder/obat/${farmasiOrderId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          token,
+          ...params
+        }
+      })
+        .then(response => {
+          context.commit('FILL_FARMASI_OBAT_ORDER', response.data.data);
           return;
         })
     }

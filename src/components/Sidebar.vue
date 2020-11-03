@@ -7,7 +7,7 @@
         </v-list-item-icon>
         <v-list-item-title>Dashboard</v-list-item-title>
       </v-list-item>
-      <v-list-group value="true" no-action>
+      <v-list-group :value="masterData" no-action>
         <template v-slot:activator>
           <v-list-item-icon>
             <v-icon color="white">mdi-database</v-icon>
@@ -74,6 +74,67 @@
             <v-list-item-title>Master Lantai</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item to="/masterdistributorobat">
+          <v-list-item-content>
+            <v-list-item-title>Master Dis Obat</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/mastertypeobat">
+          <v-list-item-content>
+            <v-list-item-title>Master Type Obat</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-group>
+      <v-list-group :value="gudang" no-action>
+        <template v-slot:activator>
+          <v-list-item-icon>
+            <v-icon color="white">mdi-garage</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Gudang</v-list-item-title>
+        </template>
+        <v-list-item to="/listallgudang">
+          <v-list-item-content>
+            <v-list-item-title>List All Gudang</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/listnewgudang">
+          <v-list-item-content>
+            <v-list-item-title>List New Gudang</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/pembeliangudang">
+          <v-list-item-content>
+            <v-list-item-title>Pembelian Gudang</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/permintaanfarmasi">
+          <v-list-item-content>
+            <v-list-item-title>Permintaan Farmasi</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-group>
+      <v-list-group :value="farmasi" no-action>
+        <template v-slot:activator>
+          <v-list-item-icon>
+            <v-icon color="white">mdi-pharmacy</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Farmasi</v-list-item-title>
+        </template>
+        <v-list-item to="/listallfarmasi">
+          <v-list-item-content>
+            <v-list-item-title>List All Farmasi</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/listnewfarmasi">
+          <v-list-item-content>
+            <v-list-item-title>List New Farmasi</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/farmasiorder">
+          <v-list-item-content>
+            <v-list-item-title>Farmasi Order</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list-group>
     </v-list>
   </v-navigation-drawer>
@@ -81,7 +142,14 @@
 
 <script>
 export default {
-  name: "Sidebar"
+  name: "Sidebar",
+  data() {
+    return {
+      masterData: false,
+      gudang: false,
+      farmasi: false,
+    };
+  },
 };
 </script>
 

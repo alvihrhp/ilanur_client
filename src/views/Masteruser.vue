@@ -1,5 +1,6 @@
 <template>
   <div class="master-user">
+    <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{
         title: 'Master User',
@@ -27,9 +28,11 @@
       >Delete User Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+        from: 'User',
         formInput,
         btnTitle: 'Create User',
-        btnIcon: 'mdi-account'
+        btnIcon: 'mdi-account',
+        createAction: 'createMasterUser'
       }"
         v-on:createUserSuccess="resetFormInput"
       >
@@ -88,6 +91,7 @@
       <Datatable
         :key="key"
         v-bind:dataTableDetail="{
+          from: 'User',
           cardTitle: 'Table User',
           data: masterUser.data,
           header: masterUser.header,
@@ -97,6 +101,9 @@
           buttonDelete: true,
           loadingData,
           itemKey: 'user_ID',
+          isExpanded: false,
+          editAction: 'editMasterUser',
+          deleteAction: 'deleteMasterUser',
       }"
         v-on:inputFormEdit="inputEditUser"
         v-on:editUserSuccess="successEdit"
@@ -160,6 +167,7 @@
 </template>
 
 <script>
+import Toolbar from "../components/Toolbar";
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
 import Formdialog from "../components/Formdialog";
@@ -168,7 +176,8 @@ export default {
   components: {
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
+    Toolbar
   },
   data() {
     return {
@@ -218,7 +227,8 @@ export default {
         { text: "First Name", value: "pfirstname" },
         { text: "Last Name", value: "plastname" },
         { text: "role", value: "role" },
-        { text: "location", value: "location" }
+        { text: "location", value: "location" },
+        { text: "Actions", value: "actions", sortable: false }
       ]
     };
   },

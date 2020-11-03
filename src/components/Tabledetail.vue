@@ -1,13 +1,17 @@
 <template>
   <div id="table">
-    <div class="loading" v-if="price.data.length === 0" style="text-align: center;">
+    <div
+      class="loading"
+      v-if="data.data.length === 0"
+      style="text-align: center"
+    >
       <img src="../assets/loading-action.gif" />
     </div>
     <v-data-table
       v-else
       dense
-      :headers="price.header"
-      :items="price.data"
+      :headers="data.header"
+      :items="data.data"
       item-key="name"
       class="elevation-1"
     >
@@ -15,7 +19,7 @@
         <v-dialog v-model="dialog" max-width="500px">
           <v-card>
             <v-card-title>
-              <span class="headline">{{formEditTitle}}</span>
+              <span class="headline">Edit Detail</span>
             </v-card-title>
             <v-card-text>
               <v-container>
@@ -27,15 +31,29 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <img src="../assets/loading-action.gif" v-show="!buttonAction" />
-              <v-btn color="blue darken-1" text @click="close" v-show="buttonAction">Cancel</v-btn>
-              <v-btn color="blue darken-1" text @click="save" v-show="buttonAction">Save</v-btn>
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="close"
+                v-show="buttonAction"
+                >Cancel</v-btn
+              >
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="save"
+                v-show="buttonAction"
+                >Save</v-btn
+              >
             </v-card-actions>
-            <v-alert v-if="isError" type="error">{{errorMessage}}</v-alert>
+            <v-alert v-if="isError" type="error">{{ errorMessage }}</v-alert>
           </v-card>
         </v-dialog>
       </template>
-      <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="editItem(item)" color="#FFCC00">mdi-pencil</v-icon>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon class="mr-2" @click="editItem(item)" color="#FFCC00"
+          >mdi-pencil</v-icon
+        >
       </template>
     </v-data-table>
   </div>
@@ -51,6 +69,36 @@ export default {
     from = from.join("");
     if (from === "Kamar") {
       this.$store.dispatch(`getHarga${from}`, this.detail.item.id);
+    } else if (from === "Iangudang") {
+      this.$store.dispatch(
+        "getPembelianGudangObat",
+        this.detail.item.gudang_po_ID
+      );
+    } else if (from === "Pembeliangudang") {
+      let tableExpandFor = this.detail.tableExpandFor.split("");
+      tableExpandFor[0] = tableExpandFor[0].toUpperCase();
+      tableExpandFor = tableExpandFor.join("");
+      if (tableExpandFor === "GudangRrObat") {
+        this.$store.dispatch(
+          `get${tableExpandFor}`,
+          this.detail.item.gudang_rr_ID
+        );
+      } else {
+        this.$store.dispatch(
+          `get${tableExpandFor}`,
+          this.detail.item.gudang_retur_ID
+        );
+      }
+    } else if (from === "Taanfarmasi") {
+      this.$store.dispatch(
+        `getPermintaanObatFarmasi`,
+        this.detail.item.farmasi_order_ID
+      );
+    } else if (from === "Iorder") {
+      this.$store.dispatch(
+        `getFarmasiObatOrder`,
+        this.detail.item.farmasi_order_ID
+      );
     } else {
       this.$store.dispatch(
         `getHarga${from}`,
@@ -67,167 +115,255 @@ export default {
         { text: "Doctor Pembagian", value: "doctor_pembagian" },
         { text: "Doctor On Call", value: "doctor_on_call" },
         { text: "Doctor On Visit", value: "doctor_on_visit" },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       headerTindakan: [
         {
           text: "Type",
-          value: "type"
+          value: "type",
         },
         {
           text: "Tindakan Harga",
-          value: "tindakan_harga"
+          value: "tindakan_harga",
         },
         {
           text: "Tindakan Sewa Alat",
-          value: "tindakan_sewa_alat"
+          value: "tindakan_sewa_alat",
         },
         {
           text: "Tindakan Sewa Ruangan",
-          value: "tindakan_sewa_ruangan"
+          value: "tindakan_sewa_ruangan",
         },
         {
           text: "Tindakan Jasa Paramedis",
-          value: "tindakan_jasa_paramedis"
+          value: "tindakan_jasa_paramedis",
         },
         {
           text: "Tindakan Jasa Operator",
-          value: "tindakan_jasa_operator"
+          value: "tindakan_jasa_operator",
         },
         {
           text: "Tindakan Jasa A Operator",
-          value: "tindakan_jasa_aoperator"
+          value: "tindakan_jasa_aoperator",
         },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       headerLab: [
         {
           text: "Type",
-          value: "type"
+          value: "type",
         },
         {
           text: "Harga Pemeriksaan",
-          value: "harga_lab"
+          value: "harga_lab",
         },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       headerRonsen: [
         {
           text: "Type",
-          value: "type"
+          value: "type",
         },
         {
           text: "Harga Pemeriksaan",
-          value: "harga"
+          value: "harga",
         },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       headerObat: [
         {
           text: "Type",
-          value: "type"
+          value: "type",
         },
         {
           text: "Harga / Box",
-          value: "harga_box"
+          value: "harga_box",
         },
         {
           text: "Harga Satuan",
-          value: "harga_satuan"
+          value: "harga_satuan",
         },
         {
           text: "Actions",
           value: "actions",
-          sortable: false
-        }
+          sortable: false,
+        },
       ],
       headerKamar: [
         {
           text: "Kelas",
           value: "kelas",
-          align: "start"
+          align: "start",
         },
         {
           text: "Type",
-          value: "type"
+          value: "type",
         },
         {
           text: "Kapasitas",
-          value: "kapasitas"
+          value: "kapasitas",
         },
         {
           text: "Harga",
-          value: "harga"
+          value: "harga",
         },
         {
           text: "Actions",
           value: "actions",
-          sortable: false
-        }
+          sortable: false,
+        },
+      ],
+      headerPembelianGudang: [
+        {
+          text: "Nama Obat",
+          value: "obat_nama",
+          align: "start",
+        },
+        {
+          text: "Quantity Obat",
+          value: "gudang_po_obat_qty",
+        },
+        {
+          text: "Harga Obat",
+          value: "gudang_po_obat_price",
+        },
+        {
+          text: "Total Harga Obat",
+          value: "gudang_po_obat_total",
+        },
+        {
+          text: "Status",
+          value: "gudang_po_obat_status",
+        },
+        {
+          text: "Actions",
+          value: "actions",
+          sortable: false,
+        },
+      ],
+      headerGudangRr: [
+        {
+          text: "Nama Obat",
+          value: "obat_nama",
+          align: "start",
+        },
+        {
+          text: "Quantity",
+          value: "gudang_rr_obat_qty",
+        },
+        {
+          text: "Price",
+          value: "gudang_rr_obat_price",
+        },
+        {
+          text: "Total",
+          value: "gudang_rr_obat_total",
+        },
+        {
+          text: "Kode Obat",
+          value: "obat_kode",
+        },
+      ],
+      headerGudangRetur: [
+        {
+          text: "Nama Obat",
+          value: "obat_nama",
+          align: "start",
+        },
+        {
+          text: "Quantity",
+          value: "gudang_retur_obat_qty",
+        },
+        {
+          text: "Price",
+          value: "gudang_retur_obat_price",
+        },
+        {
+          text: "Total",
+          value: "gudang_retur_obat_total",
+        },
+      ],
+      headerPermintaanObatFarmasi: [
+        {
+          text: "Kode Obat",
+          value: "obat_kode",
+          align: "start",
+        },
+        {
+          text: "Nama Obat",
+          value: "obat_nama",
+        },
+        {
+          text: "Quantity",
+          value: "farmasi_order_obat_qty",
+        },
+        {
+          text: "Status",
+          value: "farmasi_order_obat_status",
+        },
+        {
+          text: "Actions",
+          value: "actions",
+          sortable: false,
+        },
+      ],
+      headerFarmasiObatOrder: [
+        {
+          text: "Kode Obat",
+          value: "obat_kode",
+          align: "start",
+        },
+        {
+          text: "Nama Obat",
+          value: "obat_nama",
+        },
+        {
+          text: "Quantity",
+          value: "farmasi_order_obat_qty",
+        },
+        {
+          text: "Status",
+          value: "farmasi_order_obat_status",
+        },
       ],
       isError: false,
       errorMessage: "",
-      buttonAction: true
+      buttonAction: true,
     };
   },
   computed: {
-    price() {
-      let from = this.$route.name.split("").slice(6);
-      from[0] = from[0].toUpperCase();
-      from = from.join("");
-      let header = [];
-      if (this.$store.state[`harga${from}`].length > 0) {
-        if (from === "Doctor") {
-          header = this.headerDoctor;
-        } else if (from === "Tindakan") {
-          header = this.headerTindakan;
-        } else if (from === "Lab") {
-          header = this.headerLab;
-        } else if (from === "Ronsen") {
-          header = this.headerRonsen;
-        } else if (from === "Obat") {
-          header = this.headerObat;
-        } else if (from === "Kamar") {
-          header = this.headerKamar;
-        }
+    data() {
+      if (this.$store.state[`${this.detail.tableExpandFor}`].length > 0) {
         return {
-          header,
-          data: this.$store.state[`harga${from}`]
+          header: this[`${this.detail.tableExpandHeader}`],
+          data: this.$store.state[`${this.detail.tableExpandFor}`],
         };
       } else {
         return {
-          header,
-          data: []
+          header: this[`${this.detail.tableExpandHeader}`],
+          data: [],
         };
       }
     },
-    formEditTitle() {
-      let from = this.$route.name.split("").slice(6);
-      from[0] = from[0].toUpperCase();
-      from = from.join("");
-      return `Edit Harga ${from}`;
-    }
   },
   methods: {
     editItem(item) {
-      this.$emit("getPrice", item);
+      this.$emit("getItem", item);
       this.dialog = true;
     },
     save() {
       this.buttonAction = false;
-      let from = this.$route.name.split("").slice(6);
-      from[0] = from[0].toUpperCase();
-      from = from.join("");
+      console.log(this.detail.tableExpandUpdate);
       this.$store
-        .dispatch(`editHarga${from}`, this.detail.editForm)
+        .dispatch(this.detail.tableExpandUpdate, this.detail.editForm)
         .then(() => {
           this.buttonAction = true;
           this.dialog = false;
           this.iserror = false;
           this.errormessage = " ";
-          this.$emit("editHargaSuccess");
+          this.$emit("editSuccess");
         })
-        .catch(error => {
+        .catch((error) => {
           this.buttonAction = true;
           this.isError = true;
           const errorKey = Object.keys(
@@ -244,11 +380,9 @@ export default {
         });
     },
     close() {
-      console.log("INI CLOSE");
       this.dialog = false;
-      console.log(this.dialog);
-    }
-  }
+    },
+  },
 };
 </script>
 

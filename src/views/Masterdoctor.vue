@@ -1,5 +1,6 @@
 <template>
   <div class="master-doctor">
+    <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{
         background: 'doctor.jpeg',
@@ -27,9 +28,11 @@
       >Delete Doctor Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+        from: 'Doctor',
         formInput,
         btnIcon: 'mdi-stethoscope',
         btnTitle: 'Create Doctor',
+        createAction: 'createMasterDoctor'
       }"
         v-on:createDoctorSuccess="resetFormInput"
       >
@@ -142,6 +145,7 @@
       <Datatable
         :key="key"
         v-bind:dataTableDetail="{
+        from: 'Doctor',
         data: masterDoctor.data,
         header: masterDoctor.header,
         length: masterDoctor.length,
@@ -151,6 +155,17 @@
         buttonEdit: true,
         buttonDelete: true,
         loadingData,
+        isExpanded: true,
+        buttonExpand: true,
+        editAction: 'editMasterDoctor',
+        deleteAction: 'deleteMasterDoctor',
+        tableExpandFormInput: 'formInputHargaDoctor',
+        tableExpandEditForm: 'editFormHargaDoctor',
+        btnExpandTitle: 'Create Price',
+        tableExpandFor: 'hargaDoctor',
+        tableExpandHeader: 'headerDoctor',
+        tableExpandCreate: 'createHargaDoctor',
+        tableExpandUpdate: 'editHargaDoctor',
       }"
         v-on:inputFormEdit="inputEditDokter"
         v-on:editDoctorSuccess="successEdit"
@@ -219,6 +234,7 @@
 </template>
 
 <script>
+import Toolbar from "../components/Toolbar";
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
 import Formdialog from "../components/Formdialog";
@@ -227,7 +243,8 @@ export default {
   components: {
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
+    Toolbar
   },
   data() {
     return {

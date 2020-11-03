@@ -2,7 +2,7 @@
   <v-container fluid class="login">
     <v-row justify="center" align="center" class="container-row">
       <v-col cols="4" md="4" sm="4">
-        <v-card :height="cardHeight" color="#ee9632">
+        <v-card :height="cardHeight" color="#ee9632" v-animate-css="'slideInDown'">
           <div class="login-title">
             <h1>ilanur</h1>
           </div>
@@ -70,6 +70,7 @@ export default {
         .then(_ => {
           this.$router.push("/dashboard");
           this.$store.dispatch("getMasterType");
+          this.$store.dispatch("getMasterLantai");
           this.cardHeight = "400px";
         })
         .catch(error => {

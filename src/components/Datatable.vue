@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      {{title}}
+      {{ title }}
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -31,7 +31,7 @@
         <v-dialog v-model="dialog" max-width="500px">
           <v-card>
             <v-card-title>
-              <span class="headline">{{formEditTitle}}</span>
+              <span class="headline">{{ formEditTitle }}</span>
             </v-card-title>
             <v-card-text>
               <v-container>
@@ -43,16 +43,39 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <img src="../assets/loading-action.gif" v-show="!buttonAction" />
-              <v-btn color="blue darken-1" text @click="close" v-show="buttonAction">Cancel</v-btn>
-              <v-btn color="blue darken-1" text @click="save" v-show="buttonAction">Save</v-btn>
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="close"
+                v-show="buttonAction"
+                >Cancel</v-btn
+              >
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="save"
+                v-show="buttonAction"
+                >Save</v-btn
+              >
             </v-card-actions>
-            <v-alert v-if="isError" type="error">{{errorMessage}}</v-alert>
+            <v-alert v-if="isError" type="error">{{ errorMessage }}</v-alert>
           </v-card>
         </v-dialog>
       </template>
-      <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="editItem(item)" v-show="buttonEdit" color="#FFCC00">mdi-pencil</v-icon>
-        <v-icon @click="deleteItem(item)" v-show="buttonDelete" color="#bb2124">mdi-delete</v-icon>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon
+          class="mr-2"
+          @click="editItem(item)"
+          v-show="buttonEdit"
+          color="#FFCC00"
+          >mdi-pencil</v-icon
+        >
+        <v-icon @click="detailItem(item)" v-show="buttonDetail" color="#4BB543"
+          >mdi-eye</v-icon
+        >
+        <v-icon @click="deleteItem(item)" v-show="buttonDelete" color="#bb2124"
+          >mdi-delete</v-icon
+        >
       </template>
       <template v-slot:expanded-item="{ headers, item }">
         <td
@@ -65,20 +88,25 @@
             class="success-create-alert"
             v-show="successCreateAlert"
             v-animate-css="'slideInDown'"
-          >{{successCreateMessage}}</v-alert>
+            >{{ successCreateMessage }}</v-alert
+          >
           <v-alert
             type="success"
             class="success-create-alert"
             v-show="successEditAlert"
             v-animate-css="'slideInDown'"
-          >{{successEditMessage}}</v-alert>
+            >{{ successEditMessage }}</v-alert
+          >
           <Formdialog
+            v-if="buttonExpand"
             v-bind:dialogDetail="{
-            formInput: logicFormInput,
-            btnIcon: 'mdi-currency-usd',
-            btnTitle: 'Create Price'
-          }"
-            v-on:createHargaSuccess="resetFormInput"
+              from: 'Detail',
+              formInput: logicFormInput,
+              btnIcon: 'mdi-currency-usd',
+              btnTitle: buttonExpandTitle,
+              createAction: tableExpandCreate,
+            }"
+            v-on:createDetailSuccess="resetFormInput"
           >
             <template v-if="getRouteName === 'Masterdoctor'">
               <v-col cols="6" md="6" sm="6">
@@ -198,7 +226,11 @@
             </template>
             <template v-else-if="getRouteName === 'Masterlab'">
               <v-col cols="6" sm="6" md="6">
-                <v-text-field label="Kode Lab" v-model="formInputHargaLab.labKode" disabled></v-text-field>
+                <v-text-field
+                  label="Kode Lab"
+                  v-model="formInputHargaLab.labKode"
+                  disabled
+                ></v-text-field>
               </v-col>
               <v-col cols="6" sm="6" md="6">
                 <v-select
@@ -220,7 +252,11 @@
             </template>
             <template v-else-if="getRouteName === 'Masterronsen'">
               <v-col cols="6" sm="6" md="6">
-                <v-text-field label="Kode Lab" v-model="formInputHargaRonsen.ronsenKode" disabled></v-text-field>
+                <v-text-field
+                  label="Kode Lab"
+                  v-model="formInputHargaRonsen.ronsenKode"
+                  disabled
+                ></v-text-field>
               </v-col>
               <v-col cols="6" sm="6" md="6">
                 <v-select
@@ -242,7 +278,11 @@
             </template>
             <template v-else-if="getRouteName === 'Masterobat'">
               <v-col cols="6" sm="6" md="6">
-                <v-text-field label="Obat Kode" v-model="formInputHargaObat.obatKode" disabled></v-text-field>
+                <v-text-field
+                  label="Obat Kode"
+                  v-model="formInputHargaObat.obatKode"
+                  disabled
+                ></v-text-field>
               </v-col>
               <v-col cols="6" sm="6" md="6">
                 <v-select
@@ -290,22 +330,33 @@
                 ></v-select>
               </v-col>
               <v-col cols="6" md="6" sm="6">
-                <v-text-field label="Kapasitas" v-model="formInputHargaKamar.kapasitas" required></v-text-field>
+                <v-text-field
+                  label="Kapasitas"
+                  v-model="formInputHargaKamar.kapasitas"
+                  required
+                ></v-text-field>
               </v-col>
               <v-col cols="6" md="6" sm="6">
-                <v-text-field label="Harga" v-model="formInputHargaKamar.harga" required></v-text-field>
+                <v-text-field
+                  label="Harga"
+                  v-model="formInputHargaKamar.harga"
+                  required
+                ></v-text-field>
               </v-col>
             </template>
           </Formdialog>
           <Tabledetail
             v-bind:detail="{
-            item,
-            headers,
-            editForm: logicPropsEditForm
-          }"
+              item,
+              headers,
+              editForm: logicPropsEditForm,
+              tableExpandFor,
+              tableExpandHeader,
+              tableExpandUpdate,
+            }"
             :key="item[`${itemKey}`]"
-            v-on:getPrice="fillFormEdit"
-            v-on:editHargaSuccess="logicEditAlert"
+            v-on:getItem="fillFormEdit"
+            v-on:editSuccess="logicEditAlert"
           >
             <template v-if="getRouteName === 'Masterdoctor'">
               <v-col cols="6" md="6" sm="6">
@@ -440,10 +491,48 @@
                 ></v-select>
               </v-col>
               <v-col cols="6" md="6" sm="6">
-                <v-text-field label="Kapasitas" v-model="editFormHargaKamar.kapasitas" required></v-text-field>
+                <v-text-field
+                  label="Kapasitas"
+                  v-model="editFormHargaKamar.kapasitas"
+                  required
+                ></v-text-field>
               </v-col>
               <v-col cols="6" md="6" sm="6">
-                <v-text-field label="Harga" v-model="editFormHargaKamar.harga" required></v-text-field>
+                <v-text-field
+                  label="Harga"
+                  v-model="editFormHargaKamar.harga"
+                  required
+                ></v-text-field>
+              </v-col>
+            </template>
+            <template v-else-if="getRouteName === 'Pembeliangudang'">
+              <v-text-field
+                label="Obat Quantity"
+                v-model="editFormPembelianGudangObat.gudangPoObatQuantity"
+                :rules="validationFormPembelianGudangObat.gudangPoObatQuantity"
+                required
+              ></v-text-field>
+            </template>
+            <template v-else-if="getRouteName === 'Permintaanfarmasi'">
+              <v-col cols="6" md="6">
+                <v-text-field
+                  label="Obat Quantity"
+                  v-model="editFormPermintaanObatFarmasi.farmasiOrderObatQty"
+                  :rules="
+                    validationFormEditPermintaanObatFarmasi.farmasiOrderObatQty
+                  "
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6" md="6">
+                <v-text-field
+                  label="Obat Price"
+                  v-model="editFormPermintaanObatFarmasi.farmasiOrderObatPrice"
+                  :rules="
+                    validationFormEditPermintaanObatFarmasi.farmasiOrderObatPrice
+                  "
+                  required
+                ></v-text-field>
               </v-col>
             </template>
           </Tabledetail>
@@ -467,7 +556,7 @@
         <v-dialog v-model="dialog" max-width="500px">
           <v-card>
             <v-card-title>
-              <span class="headline">{{formEditTitle}}</span>
+              <span class="headline">{{ formEditTitle }}</span>
             </v-card-title>
             <v-card-text>
               <v-container>
@@ -479,16 +568,39 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <img src="../assets/loading-action.gif" v-show="!buttonAction" />
-              <v-btn color="blue darken-1" text @click="close" v-show="buttonAction">Cancel</v-btn>
-              <v-btn color="blue darken-1" text @click="save" v-show="buttonAction">Save</v-btn>
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="close"
+                v-show="buttonAction"
+                >Cancel</v-btn
+              >
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="save"
+                v-show="buttonAction"
+                >Save</v-btn
+              >
             </v-card-actions>
-            <v-alert v-if="isError" type="error">{{errorMessage}}</v-alert>
+            <v-alert v-if="isError" type="error">{{ errorMessage }}</v-alert>
           </v-card>
         </v-dialog>
       </template>
-      <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="editItem(item)" v-show="buttonEdit" color="#FFCC00">mdi-pencil</v-icon>
-        <v-icon @click="deleteItem(item)" v-show="buttonDelete" color="#bb2124">mdi-delete</v-icon>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon
+          class="mr-2"
+          @click="editItem(item)"
+          v-show="buttonEdit"
+          color="#FFCC00"
+          >mdi-pencil</v-icon
+        >
+        <v-icon @click="detailItem(item)" v-show="buttonDetail" color="#4BB543"
+          >mdi-eye</v-icon
+        >
+        <v-icon @click="deleteItem(item)" v-show="buttonDelete" color="#bb2124"
+          >mdi-delete</v-icon
+        >
       </template>
     </v-data-table>
   </v-card>
@@ -503,10 +615,11 @@ export default {
   props: ["dataTableDetail"],
   components: {
     Tabledetail,
-    Formdialog
+    Formdialog,
   },
   data() {
     return {
+      from: this.dataTableDetail.from,
       headers: this.dataTableDetail.header,
       search: "",
       title: this.dataTableDetail.cardTitle,
@@ -526,7 +639,7 @@ export default {
         doctorJasa: "0",
         doctorPembagian: "0",
         doctorOnCall: "0",
-        doctorOnVisit: "0"
+        doctorOnVisit: "0",
       },
       editFormHargaDoctor: {
         id: "",
@@ -535,14 +648,14 @@ export default {
         doctorJasa: "0",
         doctorPembagian: "0",
         doctorOnCall: "0",
-        doctorOnVisit: "0"
+        doctorOnVisit: "0",
       },
       validationFormDoctor: {
-        type: [v => !!v || "Tipe Pembayaran Dokter is required"],
-        doctorJasa: [v => !!v || "Harga Jasa Dokter is required"],
-        doctorPembagian: [v => !!v || "Pembagian Dokter is required"],
-        doctorOnVisit: [v => !!v || "Harga On Visit is required"],
-        doctorOnCall: [v => !!v || "Harga On Call is required"]
+        type: [(v) => !!v || "Tipe Pembayaran Dokter is required"],
+        doctorJasa: [(v) => !!v || "Harga Jasa Dokter is required"],
+        doctorPembagian: [(v) => !!v || "Pembagian Dokter is required"],
+        doctorOnVisit: [(v) => !!v || "Harga On Visit is required"],
+        doctorOnCall: [(v) => !!v || "Harga On Call is required"],
       },
       formInputHargaTindakan: {
         tindakanKode: "",
@@ -552,7 +665,7 @@ export default {
         tindakanSewaRuangan: "0",
         tindakanJasaOperator: "0",
         tindakanJasaAOperator: "0",
-        tindakanJasaParamedis: "0"
+        tindakanJasaParamedis: "0",
       },
       editFormHargaTindakan: {
         id: "",
@@ -563,96 +676,127 @@ export default {
         tindakanSewaRuangan: "0",
         tindakanJasaOperator: "0",
         tindakanJasaAOperator: "0",
-        tindakanJasaParamedis: "0"
+        tindakanJasaParamedis: "0",
       },
       validationFormTindakan: {
-        type: [v => !!v || "Tipe Pembayaran Tindakan is required"],
-        tindakanHarga: [v => !!v || "Tindakan Harga is required"],
-        tindakanSewaAlat: [v => !!v || "Tindakan Sewa Alat is required"],
-        tindakanSewaRuangan: [v => !!v || "Tindakan Sewa Ruangan is required"],
+        type: [(v) => !!v || "Tipe Pembayaran Tindakan is required"],
+        tindakanHarga: [(v) => !!v || "Tindakan Harga is required"],
+        tindakanSewaAlat: [(v) => !!v || "Tindakan Sewa Alat is required"],
+        tindakanSewaRuangan: [
+          (v) => !!v || "Tindakan Sewa Ruangan is required",
+        ],
         tindakanJasaOperator: [
-          v => !!v || "Tindakan Jasa Operator is required"
+          (v) => !!v || "Tindakan Jasa Operator is required",
         ],
         tindakanJasaAOperator: [
-          v => !!v || "Tindakan Jasa A Operator is required"
+          (v) => !!v || "Tindakan Jasa A Operator is required",
         ],
         tindakanJasaParamedis: [
-          v => !!v || "Tindakan Jasa Paramedis is required"
-        ]
+          (v) => !!v || "Tindakan Jasa Paramedis is required",
+        ],
       },
       formInputHargaLab: {
         labKode: "",
         type: null,
-        hargaLab: "0"
+        hargaLab: "0",
       },
       editFormHargaLab: {
         id: "",
         labKode: "",
         type: null,
-        hargaLab: "0"
+        hargaLab: "0",
       },
       validationFormLab: {
-        type: [v => !!v || "Tipe Pembayaran is required"],
-        hargaLab: [v => !!v || "Harga Lab is requred"]
+        type: [(v) => !!v || "Tipe Pembayaran is required"],
+        hargaLab: [(v) => !!v || "Harga Lab is requred"],
       },
       formInputHargaRonsen: {
         ronsenKode: "",
         type: null,
-        hargaRonsen: "0"
+        hargaRonsen: "0",
       },
       editFormHargaRonsen: {
         id: "",
         ronsenKode: "",
         type: null,
-        hargaRonsen: "0"
+        hargaRonsen: "0",
       },
       validationFormRonsen: {
-        type: [v => !!v || "Tipe Pembayaran is required"],
-        hargaRonsen: [v => !!v || "Harga Ronsen is required"]
+        type: [(v) => !!v || "Tipe Pembayaran is required"],
+        hargaRonsen: [(v) => !!v || "Harga Ronsen is required"],
       },
       formInputHargaObat: {
         obatKode: "",
         type: null,
         hargaBox: "0",
-        hargaSatuan: "0"
+        hargaSatuan: "0",
       },
       editFormHargaObat: {
         id: "",
         obatKode: "",
         type: null,
         hargaBox: "0",
-        hargaSatuan: "0"
+        hargaSatuan: "0",
       },
       validationFormObat: {
-        type: [v => !!v || "Tipe pembayaran is required"],
-        hargaBox: [v => !!v || "Harga Box is required"],
-        hargaSatuan: [v => !!v || "Harga Satuan is required"]
+        type: [(v) => !!v || "Tipe pembayaran is required"],
+        hargaBox: [(v) => !!v || "Harga Box is required"],
+        hargaSatuan: [(v) => !!v || "Harga Satuan is required"],
       },
       formInputHargaKamar: {
         kamarId: "",
         kelas: null,
         type: null,
         kapasitas: "0",
-        harga: "0"
+        harga: "0",
       },
       editFormHargaKamar: {
         id: "",
         kelas: null,
         type: null,
         kapasitas: "0",
-        harga: "0"
+        harga: "0",
       },
       validationFormKamar: {
-        type: [v => !!v || "Type is required"],
-        kelas: [v => !!v || "Kelas is required"]
+        type: [(v) => !!v || "Type is required"],
+        kelas: [(v) => !!v || "Kelas is required"],
       },
       selectKamarKelas: ["VVIP", "VIP", "SATU", "DUA", "TIGA"],
+      editFormPembelianGudangObat: {
+        id: "",
+        gudangPoObatQuantity: 0,
+        gudangPoObatPrice: 0,
+      },
+      validationFormPembelianGudangObat: {
+        gudangPoObatQuantity: [(v) => !!v || "Quantity is required"],
+      },
+      editFormPermintaanObatFarmasi: {
+        id: "",
+        farmasiOrderObatQty: 0,
+        farmasiOrderObatPrice: "",
+      },
+      validationFormEditPermintaanObatFarmasi: {
+        farmasiOrderObatQty: [
+          (v) => !!v || "Farmasi Order Obat Quantity cannot be empty",
+        ],
+        farmasiOrderObatPrice: [
+          (v) => !!v || "Farmasi Order Obat Price cannot be empty",
+        ],
+      },
       successCreateAlert: false,
       successCreateMessage: "",
       successEditAlert: false,
       successEditMessage: "",
       buttonEdit: this.dataTableDetail.buttonEdit,
-      buttonDelete: this.dataTableDetail.buttonDelete
+      buttonDelete: this.dataTableDetail.buttonDelete,
+      buttonDetail: this.dataTableDetail.buttonDetail,
+      conditionDataTable: this.dataTableDetail.isExpanded,
+      buttonExpand: this.dataTableDetail.buttonExpand,
+      buttonExpandTitle: this.dataTableDetail.btnExpandTitle,
+      tableExpandFor: this.dataTableDetail.tableExpandFor,
+      tableExpandHeader: this.dataTableDetail.tableExpandHeader,
+      tableExpandCreate: this.dataTableDetail.tableExpandCreate,
+      tableExpandUpdate: this.dataTableDetail.tableExpandUpdate,
     };
   },
   watch: {
@@ -660,8 +804,8 @@ export default {
       handler() {
         this.$emit("getData", this.params);
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   mounted() {
     this.$emit("getData", this.params);
@@ -677,7 +821,7 @@ export default {
     params() {
       return {
         ...this.options,
-        search: this.search
+        search: this.search,
       };
     },
     formEditTitle() {
@@ -686,21 +830,6 @@ export default {
     data() {
       return this.dataTableDetail.data;
     },
-    conditionDataTable() {
-      const from = this.$route.name.slice(6);
-      if (
-        from === "doctor" ||
-        from === "tindakan" ||
-        from === "lab" ||
-        from === "ronsen" ||
-        from === "obat" ||
-        from === "kamar"
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    },
     selectType() {
       let arrayType = this.$store.state.masterType;
       let from = this.$route.name.slice(6).split("");
@@ -708,9 +837,9 @@ export default {
       from = from.join("");
       if (this.$store.state[`harga${from}`].length > 0) {
         let filteredType = [];
-        arrayType.forEach(type => {
+        arrayType.forEach((type) => {
           let flag = false;
-          this.$store.state[`harga${from}`].forEach(item => {
+          this.$store.state[`harga${from}`].forEach((item) => {
             if (type.name === item.type || type.status === "TIDAK AKTIF") {
               flag = true;
             }
@@ -721,36 +850,21 @@ export default {
         });
         return filteredType;
       } else {
-        arrayType = arrayType.map(type => {
+        arrayType = arrayType.map((type) => {
           return type.name;
         });
         return arrayType;
       }
     },
     logicFormInput() {
-      if (this.$route.name === "Masterdoctor") {
-        return this.formInputHargaDoctor;
-      } else if (this.$route.name === "Mastertindakan") {
-        return this.formInputHargaTindakan;
-      } else if (this.$route.name === "Masterlab") {
-        return this.formInputHargaLab;
-      } else if (this.$route.name === "Masterronsen") {
-        return this.formInputHargaRonsen;
-      } else if (this.$route.name === "Masterobat") {
-        return this.formInputHargaObat;
-      } else if (this.$route.name === "Masterkamar") {
-        return this.formInputHargaKamar;
-      }
+      return this[`${this.dataTableDetail.tableExpandFormInput}`];
     },
     getRouteName() {
       return this.$route.name;
     },
     logicPropsEditForm() {
-      let from = this.$route.name.slice(6).split("");
-      from[0] = from[0].toUpperCase();
-      from = from.join("");
-      return this[`editFormHarga${from}`];
-    }
+      return this[`${this.dataTableDetail.tableExpandEditForm}`];
+    },
   },
   methods: {
     editItem(item) {
@@ -758,18 +872,18 @@ export default {
       this.$emit("inputFormEdit", item);
     },
     save() {
-      const master = this.title.slice(6);
       this.buttonAction = false;
       this.$store
-        .dispatch(`editMaster${master}`, this.editForm)
+        .dispatch(this.dataTableDetail.editAction, this.editForm)
         .then(() => {
           this.buttonAction = true;
           this.dialog = false;
           this.isError = false;
           this.errorMessage = "";
-          this.$emit(`edit${master}Success`);
+          this.$emit(`edit${this.from}Success`);
         })
-        .catch(error => {
+        .catch((error) => {
+          console.log({ error });
           this.buttonAction = true;
           this.isError = true;
           const errorKey = Object.keys(
@@ -789,7 +903,6 @@ export default {
       this.dialog = false;
     },
     deleteItem(item) {
-      const master = this.title.slice(6);
       swal
         .fire({
           title: "Are you sure?",
@@ -798,19 +911,22 @@ export default {
           showCancelButton: true,
           confirmButtonColor: "#3085d6",
           cancelButtonColor: "#d33",
-          confirmButtonText: "Yes, delete it!"
+          confirmButtonText: "Yes, delete it!",
         })
-        .then(result => {
+        .then((result) => {
           if (result.value) {
-            return this.$store.dispatch(`deleteMaster${master}`, item);
+            return this.$store.dispatch(
+              this.dataTableDetail.deleteAction,
+              item
+            );
           } else {
             throw null;
           }
         })
         .then(() => {
-          this.$emit(`delete${master}Success`);
+          this.$emit(`delete${this.from}Success`);
         })
-        .catch(error => {
+        .catch((error) => {
           const errorKey = Object.keys(
             { error }.error.response.data.messages
           )[0];
@@ -823,15 +939,6 @@ export default {
             this.isError = false;
           }
         });
-    },
-    detailPrice(item) {
-      let master = this.title.slice(6).split("");
-      master[0] = master[0].toLowerCase();
-      master = master.join("");
-      this.$router.push({
-        name: "detailprice",
-        params: { from: master, id: item[`${master}_kode`] }
-      });
     },
     fillFormInput(item) {
       if (this.$route.name === "Masterdoctor") {
@@ -884,9 +991,7 @@ export default {
         this.formInputHargaKamar.harga = "0";
       }
       this.successCreateAlert = true;
-      this.successCreateMessage = `Create Harga ${this.$route.name.slice(
-        6
-      )} Success`;
+      this.successCreateMessage = `Create Detail Success`;
       setTimeout(() => {
         this.successCreateAlert = false;
       }, 3500);
@@ -936,18 +1041,36 @@ export default {
         this.editFormHargaKamar.type = item.type;
         this.editFormHargaKamar.kapasitas = item.kapasitas;
         this.editFormHargaKamar.harga = item.harga;
+      } else if (this.$route.name === "Pembeliangudang") {
+        this.editFormPembelianGudangObat.id = item.gudang_po_obat_ID;
+        this.editFormPembelianGudangObat.gudangPoObatQuantity =
+          item.gudang_po_obat_qty;
+        this.editFormPembelianGudangObat.gudangPoObatPrice =
+          item.gudang_po_obat_price;
+      } else if (this.$route.name === "Permintaanfarmasi") {
+        this.editFormPermintaanObatFarmasi.id = item.farmasi_order_obat_ID;
+        this.editFormPermintaanObatFarmasi.farmasiOrderObatQty =
+          item.farmasi_order_obat_qty;
+        this.editFormPermintaanObatFarmasi.farmasiOrderObatPrice =
+          item.farmasi_order_obat_price;
       }
     },
     logicEditAlert() {
       this.successEditAlert = true;
-      this.successEditMessage = `Edit Harga ${this.$route.name.slice(
-        6
-      )} Success`;
+      this.successEditMessage = `Edit Detail Success`;
       setTimeout(() => {
         this.successEditAlert = false;
       }, 3500);
-    }
-  }
+    },
+    detailItem(item) {
+      if (this.$route.name === "Pembeliangudang") {
+        this.$router.push({
+          name: "Detailpembeliangudang",
+          params: { poId: item.gudang_po_ID },
+        });
+      }
+    },
+  },
 };
 </script>
 

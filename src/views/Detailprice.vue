@@ -3,9 +3,9 @@
     <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{
-      background: 'detailprice.jpeg',
-      title: bannerTitle
-    }"
+        background: 'detailprice.jpeg',
+        title: bannerTitle,
+      }"
     ></Banner>
     <div class="loading" v-if="price.data.length === 0">
       <img src="../assets/loading.gif" />
@@ -13,14 +13,18 @@
     <div class="data-table-container" v-else>
       <Formdialog
         v-bind:dialogDetail="{
-        formInput: logicFormInput,
-        btnIcon: 'mdi-currency-usd',
-        btnTitle: 'Create Price'
-      }"
+          formInput: logicFormInput,
+          btnIcon: 'mdi-currency-usd',
+          btnTitle: 'Create Price',
+        }"
       >
         <template v-if="this.$route.params.from === 'doctor'">
           <v-col cols="6" md="6" sm="6">
-            <v-text-field label="Kode Dokter" v-model="formInputHargaDoctor.doctorKode" disabled></v-text-field>
+            <v-text-field
+              label="Kode Dokter"
+              v-model="formInputHargaDoctor.doctorKode"
+              disabled
+            ></v-text-field>
           </v-col>
           <v-col cols="6" md="6" sm="6">
             <v-select
@@ -132,7 +136,11 @@
         </template>
         <template v-else-if="this.$route.params.from === 'lab'">
           <v-col cols="6" sm="6" md="6">
-            <v-text-field label="Kode Lab" v-model="formInputHargaLab.labKode" disabled></v-text-field>
+            <v-text-field
+              label="Kode Lab"
+              v-model="formInputHargaLab.labKode"
+              disabled
+            ></v-text-field>
           </v-col>
           <v-col cols="6" sm="6" md="6">
             <v-select
@@ -154,7 +162,11 @@
         </template>
         <template v-else-if="this.$route.params.from === 'ronsen'">
           <v-col cols="6" sm="6" md="6">
-            <v-text-field label="Kode Lab" v-model="formInputHargaRonsen.ronsenKode" disabled></v-text-field>
+            <v-text-field
+              label="Kode Lab"
+              v-model="formInputHargaRonsen.ronsenKode"
+              disabled
+            ></v-text-field>
           </v-col>
           <v-col cols="6" sm="6" md="6">
             <v-select
@@ -176,7 +188,11 @@
         </template>
         <template v-else-if="this.$route.params.from === 'obat'">
           <v-col cols="6" sm="6" md="6">
-            <v-text-field label="Obat Kode" v-model="formInputHargaObat.obatKode" disabled></v-text-field>
+            <v-text-field
+              label="Obat Kode"
+              v-model="formInputHargaObat.obatKode"
+              disabled
+            ></v-text-field>
           </v-col>
           <v-col cols="6" sm="6" md="6">
             <v-select
@@ -207,10 +223,10 @@
       </Formdialog>
       <Datatable
         v-bind:dataTableDetail="{
-        data: price.data,
-        header: price.header,
-        cardTitle: `Table Price`
-      }"
+          data: price.data,
+          header: price.header,
+          cardTitle: `Table Price`,
+        }"
       ></Datatable>
     </div>
   </v-container>
@@ -227,7 +243,7 @@ export default {
     Toolbar,
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
   },
   created() {
     let from = this.$route.params.from.split("");
@@ -243,79 +259,79 @@ export default {
         { text: "Doctor Pembagian", value: "doctor_pembagian" },
         { text: "Doctor On Call", value: "doctor_on_call" },
         { text: "Doctor On Visit", value: "doctor_on_visit" },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       headerTindakan: [
         {
           text: "Type",
-          value: "type"
+          value: "type",
         },
         {
           text: "Tindakan Harga",
-          value: "tindakan_harga"
+          value: "tindakan_harga",
         },
         {
           text: "Tindakan Sewa Alat",
-          value: "tindakan_sewa_alat"
+          value: "tindakan_sewa_alat",
         },
         {
           text: "Tindakan Sewa Ruangan",
-          value: "tindakan_sewa_ruangan"
+          value: "tindakan_sewa_ruangan",
         },
         {
           text: "Tindakan Jasa Paramedis",
-          value: "tindakan_jasa_paramedis"
+          value: "tindakan_jasa_paramedis",
         },
         {
           text: "Tindakan Jasa Operator",
-          value: "tindakan_jasa_operator"
+          value: "tindakan_jasa_operator",
         },
         {
           text: "Tindakan Jasa A Operator",
-          value: "tindakan_jasa_aoperator"
+          value: "tindakan_jasa_aoperator",
         },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       headerLab: [
         {
           text: "Type",
-          value: "type"
+          value: "type",
         },
         {
           text: "Harga Pemeriksaan",
-          value: "harga_lab"
+          value: "harga_lab",
         },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       headerRonsen: [
         {
           text: "Type",
-          value: "type"
+          value: "type",
         },
         {
           text: "Harga Pemeriksaan",
-          value: "harga"
+          value: "harga",
         },
-        { text: "Actions", value: "actions", sortable: false }
+        { text: "Actions", value: "actions", sortable: false },
       ],
       headerObat: [
         {
           text: "Type",
-          value: "type"
+          value: "type",
         },
         {
           text: "Harga / Box",
-          value: "harga_box"
+          value: "harga_box",
         },
         {
           text: "Harga Satuan",
-          value: "harga_satuan"
+          value: "harga_satuan",
         },
         {
           text: "Actions",
           value: "actions",
-          sortable: false
-        }
+          sortable: false,
+        },
       ],
       formInputHargaDoctor: {
         doctorKode: this.$route.params.id,
@@ -323,14 +339,14 @@ export default {
         doctorJasa: "0",
         doctorPembagian: "0",
         doctorOnCall: "0",
-        doctorOnVisit: "0"
+        doctorOnVisit: "0",
       },
       validationFormDoctor: {
-        type: [v => !!v || "Tipe Pembayaran Dokter is required"],
-        doctorJasa: [v => !!v || "Harga Jasa Dokter is required"],
-        doctorPembagian: [v => !!v || "Pembagian Dokter is required"],
-        doctorOnVisit: [v => !!v || "Harga On Visit is required"],
-        doctorOnCall: [v => !!v || "Harga On Call is required"]
+        type: [(v) => !!v || "Tipe Pembayaran Dokter is required"],
+        doctorJasa: [(v) => !!v || "Harga Jasa Dokter is required"],
+        doctorPembagian: [(v) => !!v || "Pembagian Dokter is required"],
+        doctorOnVisit: [(v) => !!v || "Harga On Visit is required"],
+        doctorOnCall: [(v) => !!v || "Harga On Call is required"],
       },
       formInputHargaTindakan: {
         tindakanKode: this.$route.params.id,
@@ -340,52 +356,54 @@ export default {
         tindakanSewaRuangan: "0",
         tindakanJasaOperator: "0",
         tindakanJasaAOperator: "0",
-        tindakanJasaParamedis: "0"
+        tindakanJasaParamedis: "0",
       },
       validationFormTindakan: {
-        type: [v => !!v || "Tipe Pembayaran Tindakan is required"],
-        tindakanHarga: [v => !!v || "Tindakan Harga is required"],
-        tindakanSewaAlat: [v => !!v || "Tindakan Sewa Alat is required"],
-        tindakanSewaRuangan: [v => !!v || "Tindakan Sewa Ruangan is required"],
+        type: [(v) => !!v || "Tipe Pembayaran Tindakan is required"],
+        tindakanHarga: [(v) => !!v || "Tindakan Harga is required"],
+        tindakanSewaAlat: [(v) => !!v || "Tindakan Sewa Alat is required"],
+        tindakanSewaRuangan: [
+          (v) => !!v || "Tindakan Sewa Ruangan is required",
+        ],
         tindakanJasaOperator: [
-          v => !!v || "Tindakan Jasa Operator is required"
+          (v) => !!v || "Tindakan Jasa Operator is required",
         ],
         tindakanJasaAOperator: [
-          v => !!v || "Tindakan Jasa A Operator is required"
+          (v) => !!v || "Tindakan Jasa A Operator is required",
         ],
         tindakanJasaParamedis: [
-          v => !!v || "Tindakan Jasa Paramedis is required"
-        ]
+          (v) => !!v || "Tindakan Jasa Paramedis is required",
+        ],
       },
       formInputHargaLab: {
         labKode: this.$route.params.id,
         type: null,
-        hargaLab: "0"
+        hargaLab: "0",
       },
       validationFormLab: {
-        type: [v => !!v || "Tipe Pembayaran is required"],
-        hargaLab: [v => !!v || "Harga Lab is requred"]
+        type: [(v) => !!v || "Tipe Pembayaran is required"],
+        hargaLab: [(v) => !!v || "Harga Lab is requred"],
       },
       formInputHargaRonsen: {
         ronsenKode: this.$route.params.id,
         type: null,
-        hargaRonsen: "0"
+        hargaRonsen: "0",
       },
       validationFormRonsen: {
-        type: [v => !!v || "Tipe Pembayaran is required"],
-        hargaRonsen: [v => !!v || "Harga Ronsen is required"]
+        type: [(v) => !!v || "Tipe Pembayaran is required"],
+        hargaRonsen: [(v) => !!v || "Harga Ronsen is required"],
       },
       formInputHargaObat: {
         obatKode: this.$route.params.id,
         type: null,
         hargaBox: "0",
-        hargaSatuan: "0"
+        hargaSatuan: "0",
       },
       validationFormObat: {
-        type: [v => !!v || "Tipe pembayaran is required"],
-        hargaBox: [v => !!v || "Harga Box is required"],
-        hargaSatuan: [v => !!v || "Harga Satuan is required"]
-      }
+        type: [(v) => !!v || "Tipe pembayaran is required"],
+        hargaBox: [(v) => !!v || "Harga Box is required"],
+        hargaSatuan: [(v) => !!v || "Harga Satuan is required"],
+      },
     };
   },
   computed: {
@@ -417,12 +435,12 @@ export default {
         }
         return {
           header,
-          data: this.$store.state[`harga${from}`]
+          data: this.$store.state[`harga${from}`],
         };
       } else {
         return {
           header,
-          data: []
+          data: [],
         };
       }
     },
@@ -433,9 +451,9 @@ export default {
       from = from.join("");
       if (this.$store.state[`harga${from}`].length > 0) {
         let filteredType = [];
-        arrayType.forEach(type => {
+        arrayType.forEach((type) => {
           let flag = false;
-          this.$store.state[`harga${from}`].forEach(item => {
+          this.$store.state[`harga${from}`].forEach((item) => {
             if (type === item.type) {
               flag = true;
             }
@@ -459,9 +477,9 @@ export default {
       } else if (this.$route.params.from === "obat") {
         return this.formInputHargaObat;
       }
-    }
+    },
   },
-  methods: {}
+  methods: {},
 };
 </script>
 

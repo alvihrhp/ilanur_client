@@ -2,14 +2,17 @@
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template v-slot:activator="{ on }">
       <v-btn color="primary" dark v-on="on" class="btn-open-dialog">
-        <v-icon left>{{btnIcon}}</v-icon>
-        {{btnTitle}}
+        <v-icon left>{{ btnIcon }}</v-icon>
+        {{ btnTitle }}
       </v-btn>
     </template>
     <v-card id="card-dialog">
       <v-card-title>
-        <span class="headline">{{btnTitle}}</span>
+        <span class="headline">{{ btnTitle }}</span>
       </v-card-title>
+      <div class="subtitle" v-if="subTitle === true">
+        <h4>{{ subTitleText }}</h4>
+      </div>
       <v-card-text>
         <v-container>
           <v-row>
@@ -20,10 +23,22 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <img v-show="!actionButton" src="../assets/loading-action.gif" />
-        <v-btn color="blue darken-1" text @click="dialog = false" v-show="actionButton">Close</v-btn>
-        <v-btn color="blue darken-1" text @click="saveButton" v-show="actionButton">Save</v-btn>
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="dialog = false"
+          v-show="actionButton"
+          >Close</v-btn
+        >
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="saveButton"
+          v-show="actionButton"
+          >Save</v-btn
+        >
       </v-card-actions>
-      <v-alert v-if="isError" type="error">{{errorMessage}}</v-alert>
+      <v-alert v-if="isError" type="error">{{ errorMessage }}</v-alert>
     </v-card>
   </v-dialog>
 </template>
@@ -34,42 +49,32 @@ export default {
   props: ["dialogDetail"],
   data() {
     return {
+      from: this.dialogDetail.from,
       dialog: false,
       btnIcon: this.dialogDetail.btnIcon,
       btnTitle: this.dialogDetail.btnTitle,
       isError: false,
       errorMessage: "",
       formInput: this.dialogDetail.formInput,
-      actionButton: true
+      actionButton: true,
+      createAction: this.dialogDetail.createAction,
+      subTitle: this.dialogDetail.subTitle,
+      subTitleText: this.dialogDetail.subTitleText,
     };
   },
   methods: {
     saveButton() {
-      const master = this.btnTitle.slice(7);
-      this.actionButton = false;
-      let action;
-      if (master === "Price") {
-        let from = this.$route.name.slice(6).split("");
-        from[0] = from[0].toUpperCase();
-        from = from.join("");
-        action = `createHarga${from}`;
-      } else {
-        action = `createMaster${master}`;
-      }
       this.$store
-        .dispatch(`${action}`, this.formInput)
+        .dispatch(this.createAction, this.formInput)
         .then(() => {
           this.actionButton = true;
           this.dialog = false;
           this.iserror = false;
           this.errormessage = " ";
-          if (master === "Price") {
-            this.$emit(`createHargaSuccess`);
-          } else {
-            this.$emit(`create${master}Success`);
-          }
+          this.$emit(`create${this.from}Success`);
         })
-        .catch(error => {
+        .catch((error) => {
+          console.log({ error });
           this.actionButton = true;
           this.isError = true;
           const errorKey = Object.keys(
@@ -84,8 +89,8 @@ export default {
             this.isError = false;
           }
         });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -96,5 +101,13 @@ export default {
 
 .v-alert {
   margin-bottom: 0px !important;
+}
+
+.subtitle {
+  padding: 3px 24px 3px;
+}
+
+.subtitle h4 {
+  font-weight: 300;
 }
 </style>

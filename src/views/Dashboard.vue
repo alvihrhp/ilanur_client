@@ -38,29 +38,29 @@ export default {
     Chart
   },
   created() {
-    this.$store.dispatch("getMasterDoctor");
-    this.$store.dispatch("getMasterObat");
-    this.$store.dispatch("getMasterPerusahaan");
-    this.$store.dispatch("getMasterAsuransi");
+    // this.$store.dispatch("getMasterDoctor");
+    // this.$store.dispatch("getMasterObat");
+    // this.$store.dispatch("getMasterPerusahaan");
+    // this.$store.dispatch("getMasterAsuransi");
   },
   computed: {
     amountDopa() {
       const stats = [
         {
           name: "Jumlah Dokter",
-          amount: this.$store.state.masterDoctor.length
+          amount: 0
         },
         {
           name: "Jumlah Obat",
-          amount: this.$store.state.masterObat.length
+          amount: 0
         },
         {
           name: "Jumlah Perusahaan",
-          amount: this.$store.state.masterPerusahaan.length
+          amount: 0
         },
         {
           name: "Jumlah Asuransi",
-          amount: this.$store.state.masterAsuransi.length
+          amount: 0
         }
       ];
       return stats;

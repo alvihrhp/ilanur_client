@@ -14,6 +14,16 @@ import Masterdistributor from '../views/Masterdistributor.vue'
 import Masteruser from '../views/Masteruser.vue'
 import Mastertype from '../views/Mastertype.vue'
 import Masterlantai from '../views/Masterlantai.vue'
+import Masterdistributorobat from '../views/Masterdistributorobat.vue'
+import Mastertypeobat from '../views/Mastertypeobat.vue'
+import Listallgudang from '../views/Listallgudang.vue'
+import Listnewgudang from '../views/Listnewgudang.vue'
+import Pembeliangudang from '../views/Pembeliangudang.vue'
+import Permintaanfarmasi from '../views/Permintaanfarmasi.vue';
+import Detailpembeliangudang from '../views/DetailPembelianGudang'
+import Listallfarmasi from '../views/Listallfarmasi'
+import Listnewfarmasi from '../views/Listnewfarmasi'
+import Farmasiorder from '../views/Farmasiorder';
 
 
 Vue.use(VueRouter)
@@ -88,6 +98,56 @@ const routes = [
     path: '/masterlantai',
     name: 'Masterlantai',
     component: Masterlantai
+  },
+  {
+    path: '/masterdistributorobat',
+    name: 'Masterdistributorobat',
+    component: Masterdistributorobat
+  },
+  {
+    path: '/mastertypeobat',
+    name: 'Mastertypeobat',
+    component: Mastertypeobat
+  },
+  {
+    path: '/listallgudang',
+    name: 'Listallgudang',
+    component: Listallgudang
+  },
+  {
+    path: '/listnewgudang',
+    name: 'Listnewgudang',
+    component: Listnewgudang
+  },
+  {
+    path: '/pembeliangudang',
+    name: 'Pembeliangudang',
+    component: Pembeliangudang
+  },
+  {
+    path: '/permintaanfarmasi',
+    name: 'Permintaanfarmasi',
+    component: Permintaanfarmasi
+  },
+  {
+    path: '/detailpembeliangudang/:poId',
+    name: 'Detailpembeliangudang',
+    component: Detailpembeliangudang
+  },
+  {
+    path: '/listallfarmasi',
+    name: 'Listallfarmasi',
+    component: Listallfarmasi
+  },
+  {
+    path: '/listnewfarmasi',
+    name: 'Listnewfarmasi',
+    component: Listnewfarmasi
+  },
+  {
+    path: '/farmasiorder',
+    name: 'Farmasiorder',
+    component: Farmasiorder
   }
 ]
 

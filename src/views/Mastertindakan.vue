@@ -1,5 +1,6 @@
 <template>
   <div class="master-tindakan">
+    <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{
         title: 'Master Tindakan',
@@ -27,9 +28,11 @@
       >Delete Tindakan Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+        from: 'Tindakan',
         formInput,
         btnIcon: 'mdi-thermometer',
-        btnTitle: 'Create Tindakan'
+        btnTitle: 'Create Tindakan',
+        createAction: 'createMasterTindakan'
       }"
         v-on:createTindakanSuccess="resetFormInput"
       >
@@ -80,6 +83,7 @@
       <Datatable
         :key="key"
         v-bind:dataTableDetail="{
+          from: 'Tindakan',
           cardTitle: 'Table Tindakan',
           data: masterTindakan.data,
           header: masterTindakan.header,
@@ -88,7 +92,18 @@
           buttonEdit: true,
           buttonDelete: true,
           itemKey: 'tindakan_kode',
-          loadingData
+          loadingData,
+          isExpanded: true,
+          buttonExpand: true,
+          editAction: 'editMasterTindakan',
+          deleteAction: 'deleteMasterTindakan',
+          tableExpandFormInput: 'formInputHargaTindakan',
+          tableExpandEditForm: 'editFormHargaTindakan',
+          btnExpandTitle: 'Create Price',
+          tableExpandFor: 'hargaTindakan',
+          tableExpandHeader: 'headerTindakan',
+          tableExpandCreate: 'createHargaTindakan',
+          tableExpandUpdate: 'editHargaTindakan',
       }"
         v-on:inputFormEdit="inputEditTindakan"
         v-on:editTindakanSuccess="successEdit"
@@ -109,6 +124,7 @@
 </template>
 
 <script>
+import Toolbar from "../components/Toolbar";
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
 import Formdialog from "../components/Formdialog";
@@ -117,7 +133,8 @@ export default {
   components: {
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
+    Toolbar
   },
   data() {
     return {

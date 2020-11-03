@@ -1,5 +1,6 @@
 <template>
   <div class="master-ronsen">
+    <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{
         background: 'ronsen.jpg',
@@ -27,9 +28,11 @@
       >Delete Ronsen Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+        from: 'Ronsen',
         formInput,
         btnTitle:'Create Ronsen',
-        btnIcon: 'mdi-laptop-mac'
+        btnIcon: 'mdi-laptop-mac',
+        createAction: 'createMasterRonsen'
       }"
         v-on:createRonsenSuccess="resetFormInput"
       >
@@ -65,6 +68,7 @@
       <Datatable
         :key="key"
         v-bind:dataTableDetail="{
+        from: 'Ronsen',
         cardTitle: 'Table Ronsen',
         header: masterRonsen.header,
         data: masterRonsen.data,
@@ -74,6 +78,17 @@
         buttonDelete: true,
         loadingData,
         itemKey: 'ronsen_kode',
+        isExpanded: true,
+        buttonExpand: true,
+        editAction: 'editMasterRonsen',
+        deleteAction: 'deleteMasterRonsen',
+        tableExpandFormInput: 'formInputHargaRonsen',
+        tableExpandEditForm: 'editFormHargaRonsen',
+        btnExpandTitle: 'Create Price',
+        tableExpandFor: 'hargaRonsen',
+        tableExpandHeader: 'headerRonsen',
+        tableExpandCreate: 'createHargaRonsen',
+        tableExpandUpdate: 'editHargaRonsen',
       }"
         v-on:inputFormEdit="inputEditRonsen"
         v-on:editRonsenSuccess="successEdit"
@@ -94,6 +109,7 @@
 </template>
 
 <script>
+import Toolbar from "../components/Toolbar";
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
 import Formdialog from "../components/Formdialog";
@@ -102,7 +118,8 @@ export default {
   components: {
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
+    Toolbar
   },
   data() {
     return {

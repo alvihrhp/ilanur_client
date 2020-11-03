@@ -1,5 +1,6 @@
 <template>
   <div class="master-distributor">
+    <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{
         title: 'Master Distributor',
@@ -27,9 +28,11 @@
       >Delete Distributor Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+        from: 'Distributor',
         formInput,
         btnTitle: 'Create Distributor',
-        btnIcon: 'mdi-truck'
+        btnIcon: 'mdi-truck',
+        createAction: 'createMasterDistributor'
       }"
         v-on:createDistributorSuccess="resetFormInput"
       >
@@ -61,6 +64,7 @@
       <Datatable
         :key="key"
         v-bind:dataTableDetail="{
+          from: 'Distributor',
           cardTitle: 'Table Distributor',
           data: masterDistributor.data,
           header: masterDistributor.header,
@@ -69,7 +73,18 @@
           buttonEdit: true,
           buttonDelete: true,
           loadingData,
-          itemKey: 'master_distributor_ID'
+          itemKey: 'master_distributor_ID',
+          isExpanded: true,
+          buttonExpand: true,
+          editAction: 'editMasterDistributor',
+          deleteAction: 'deleteMasterDistributor',
+          tableExpandFormInput: 'formInputDistributorObat',
+          tableExpandEditForm: 'editFormDistributorObat',
+          btnExpandTitle: 'Create Distributor Obat',
+          tableExpandFor: 'masterDistributorObat',
+          tableExpandHeader: 'headerDistributorObat',
+          tableExpandCreate: 'createDistributorObat',
+          tableExpandUpdate: 'editDistributorObat',
       }"
         v-on:inputFormEdit="inputEditDistributor"
         v-on:editDistributorSuccess="successEdit"
@@ -106,6 +121,7 @@
 </template>
 
 <script>
+import Toolbar from "../components/Toolbar";
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
 import Formdialog from "../components/Formdialog";
@@ -114,7 +130,8 @@ export default {
   components: {
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
+    Toolbar
   },
   created() {
     this.$store.dispatch("getMasterDistributor");
@@ -188,7 +205,6 @@ export default {
           this.key = true;
         })
         .catch(error => {
-          console.log({ error });
           const errorStatus = { error }.error.response.status;
           if (errorStatus === 401) {
             this.$store.commit("TOKEN_UPDATE");

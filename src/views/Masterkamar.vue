@@ -22,9 +22,11 @@
       >Edit Kamar Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+          from: 'Kamar',
           formInput,
           btnTitle: 'Create Kamar',
-          btnIcon: 'mdi-seat-flat'
+          btnIcon: 'mdi-seat-flat',
+          createAction: 'createMasterKamar'
       }"
         v-on:createKamarSuccess="resetFormInput"
       >
@@ -73,6 +75,7 @@
       <Datatable
         :key="key"
         v-bind:dataTableDetail="{
+          from: 'Kamar',
           cardTitle: 'Table Kamar',
           header: masterKamar.header,
           data: masterKamar.data,
@@ -80,7 +83,18 @@
           buttonEdit: true,
           buttonDelete: false,
           loadingData,
-          itemKey: 'id'
+          itemKey: 'id',
+          isExpanded: true,
+          buttonExpand: true,
+          editAction: 'editMasterKamar',
+          deleteAction: 'deleteMasterKamar',
+          tableExpandFormInput: 'formInputHargaKamar',
+          tableExpandEditForm: 'editFormHargaKamar',
+          btnExpandTitle: 'Create Price',
+          tableExpandFor: 'hargaKamar',
+          tableExpandHeader: 'headerKamar',
+          tableExpandCreate: 'createHargaKamar',
+          tableExpandUpdate: 'editHargaKamar'
       }"
         v-on:inputFormEdit="inputEditKamar"
         v-on:editKamarSuccess="editSuccess"

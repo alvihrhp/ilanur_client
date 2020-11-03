@@ -1,12 +1,16 @@
 <template>
   <div class="master-type">
+    <Toolbar></Toolbar>
     <Banner
       v-bind:bannerDetail="{ 
         background: 'detailprice.jpeg',
         title: 'Master Type'
     }"
     ></Banner>
-    <div class="data-table-container">
+    <div class="loading" v-if="masterType.data.length === 0">
+      <img src="../assets/loading.gif" />
+    </div>
+    <div class="data-table-container" v-else>
       <v-alert
         type="success"
         class="success-create-alert"
@@ -21,9 +25,11 @@
       >Edit Type Success</v-alert>
       <Formdialog
         v-bind:dialogDetail="{
+          from: 'Type',
           formInput,
           btnTitle: 'Create Type',
-          btnIcon: 'mdi-content-paste'
+          btnIcon: 'mdi-content-paste',
+          createAction: 'createMasterType'
       }"
         v-on:createTypeSuccess="resetFormInput"
       >
@@ -47,13 +53,16 @@
       </Formdialog>
       <Datatable
         v-bind:dataTableDetail="{
+          from: 'Type',
           data: masterType.data,
           header: masterType.header,
           cardTitle: 'Table Type',
           buttonEdit: true,
           buttonDelete: false,
           editDetail: editFormInput,
-          itemKey:'name'
+          itemKey:'name',
+          isExpanded: false,
+          editAction: 'editMasterType',
       }"
         v-on:inputFormEdit="inputEditType"
         v-on:editTypeSuccess="successEdit"
@@ -81,6 +90,7 @@
 </template>
 
 <script>
+import Toolbar from "../components/Toolbar";
 import Banner from "../components/Banner";
 import Datatable from "../components/Datatable";
 import Formdialog from "../components/Formdialog";
@@ -89,7 +99,8 @@ export default {
   components: {
     Banner,
     Datatable,
-    Formdialog
+    Formdialog,
+    Toolbar
   },
   computed: {
     masterType() {
