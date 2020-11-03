@@ -2,12 +2,16 @@
   <v-container fluid class="login">
     <v-row justify="center" align="center" class="container-row">
       <v-col cols="4" md="4" sm="4">
-        <v-card :height="cardHeight" color="#ee9632" v-animate-css="'slideInDown'">
+        <v-card
+          :height="cardHeight"
+          color="#ee9632"
+          v-animate-css="'slideInDown'"
+        >
           <div class="login-title">
             <h1>ilanur</h1>
           </div>
           <div class="alert-container" v-show="isError">
-            <v-alert type="error">{{errorMessage}}</v-alert>
+            <v-alert type="error">{{ errorMessage }}</v-alert>
           </div>
           <v-form>
             <v-container>
@@ -39,9 +43,12 @@
               large
               width="200px"
               min-height="20px"
-              class="button-login"
               v-on:click="login"
-            >Login</v-btn>
+              color="black"
+              dark
+              :loading="loadingButton"
+              >Login</v-btn
+            >
           </div>
         </v-card>
       </v-col>
@@ -56,25 +63,28 @@ export default {
     return {
       formInput: {
         username: "",
-        password: ""
+        password: "",
       },
       isError: false,
       errorMessage: "",
-      cardHeight: "400px"
+      cardHeight: "400px",
+      loadingButton: false,
     };
   },
   methods: {
     login() {
+      this.loadingButton = true;
       this.$store
         .dispatch("login", this.formInput)
-        .then(_ => {
+        .then((_) => {
+          this.loadingButton = false;
           this.$router.push("/dashboard");
           this.$store.dispatch("getMasterType");
           this.$store.dispatch("getMasterLantai");
           this.cardHeight = "400px";
         })
-        .catch(error => {
-          console.log({ error });
+        .catch((error) => {
+          this.loadingButton = false;
           this.cardHeight = "500px";
           this.isError = true;
           const errorKey = Object.keys(
@@ -82,8 +92,8 @@ export default {
           )[0];
           this.errorMessage = { error }.error.response.data.messages[errorKey];
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -2,13 +2,16 @@
   <div id="table">
     <div
       class="loading"
-      v-if="data.data.length === 0"
+      v-if="data.data.length === 0 && isFetched === false"
       style="text-align: center"
     >
       <img src="../assets/loading-action.gif" />
     </div>
+    <div class="no-data" v-if="data.data.length === 0 && isFetched === true">
+      <h3 style="text-align: center">No Data</h3>
+    </div>
     <v-data-table
-      v-else
+      v-if="data.data.length > 0 && isFetched === true"
       dense
       :headers="data.header"
       :items="data.data"
@@ -68,42 +71,76 @@ export default {
     from[0] = from[0].toUpperCase();
     from = from.join("");
     if (from === "Kamar") {
-      this.$store.dispatch(`getHarga${from}`, this.detail.item.id);
+      this.$store
+        .dispatch(`getHarga${from}`, this.detail.item.id)
+        .then((_) => {
+          this.isFetched = true;
+        })
+        .catch((error) => {
+          console.log({ error });
+        });
     } else if (from === "Iangudang") {
-      this.$store.dispatch(
-        "getPembelianGudangObat",
-        this.detail.item.gudang_po_ID
-      );
+      this.$store
+        .dispatch("getPembelianGudangObat", this.detail.item.gudang_po_ID)
+        .then((_) => {
+          this.isFetched = true;
+        })
+        .catch((error) => {
+          console.log({ error });
+        });
     } else if (from === "Pembeliangudang") {
       let tableExpandFor = this.detail.tableExpandFor.split("");
       tableExpandFor[0] = tableExpandFor[0].toUpperCase();
       tableExpandFor = tableExpandFor.join("");
       if (tableExpandFor === "GudangRrObat") {
-        this.$store.dispatch(
-          `get${tableExpandFor}`,
-          this.detail.item.gudang_rr_ID
-        );
+        this.$store
+          .dispatch(`get${tableExpandFor}`, this.detail.item.gudang_rr_ID)
+          .then((_) => {
+            this.isFetched = true;
+          })
+          .catch((error) => {
+            console.log({ error });
+          });
       } else {
-        this.$store.dispatch(
-          `get${tableExpandFor}`,
-          this.detail.item.gudang_retur_ID
-        );
+        this.$store
+          .dispatch(`get${tableExpandFor}`, this.detail.item.gudang_retur_ID)
+          .then((_) => {
+            this.isFetched = true;
+          })
+          .catch((error) => {
+            console.log({ error });
+          });
       }
     } else if (from === "Taanfarmasi") {
-      this.$store.dispatch(
-        `getPermintaanObatFarmasi`,
-        this.detail.item.farmasi_order_ID
-      );
+      this.$store
+        .dispatch(`getPermintaanObatFarmasi`, this.detail.item.farmasi_order_ID)
+        .then((_) => {
+          this.isFetched = true;
+        })
+        .catch((error) => {
+          console.log({ error });
+        });
     } else if (from === "Iorder") {
-      this.$store.dispatch(
-        `getFarmasiObatOrder`,
-        this.detail.item.farmasi_order_ID
-      );
+      this.$store
+        .dispatch(`getFarmasiObatOrder`, this.detail.item.farmasi_order_ID)
+        .then((_) => {
+          this.isFetched = true;
+        })
+        .catch((error) => {
+          console.log({ error });
+        });
     } else {
-      this.$store.dispatch(
-        `getHarga${from}`,
-        this.detail.item[`${this.$route.name.slice(6)}_kode`]
-      );
+      this.$store
+        .dispatch(
+          `getHarga${from}`,
+          this.detail.item[`${this.$route.name.slice(6)}_kode`]
+        )
+        .then((_) => {
+          this.isFetched = true;
+        })
+        .catch((error) => {
+          console.log({ error });
+        });
     }
   },
   data() {
@@ -329,6 +366,7 @@ export default {
       isError: false,
       errorMessage: "",
       buttonAction: true,
+      isFetched: false,
     };
   },
   computed: {
@@ -353,7 +391,6 @@ export default {
     },
     save() {
       this.buttonAction = false;
-      console.log(this.detail.tableExpandUpdate);
       this.$store
         .dispatch(this.detail.tableExpandUpdate, this.detail.editForm)
         .then(() => {
