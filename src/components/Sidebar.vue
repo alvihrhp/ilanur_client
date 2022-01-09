@@ -1,5 +1,11 @@
 <template>
-  <v-navigation-drawer app color="#ee9632">
+  <v-navigation-drawer 
+  app 
+  color="#ee9632"
+  v-model="drawer"
+  absolute
+  temporary>
+  {{handleMobileNav}}
     <v-list>
       <v-list-item color="#ee9632" to="/dashboard">
         <v-list-item-icon>
@@ -116,7 +122,7 @@
       <v-list-group :value="farmasi" no-action>
         <template v-slot:activator>
           <v-list-item-icon>
-            <v-icon color="white">mdi-pharmacy</v-icon>
+            <v-icon color="white">mdi-hospital-box</v-icon>
           </v-list-item-icon>
           <v-list-item-title>Farmasi</v-list-item-title>
         </template>
@@ -148,14 +154,28 @@ export default {
       masterData: false,
       gudang: false,
       farmasi: false,
+      drawer: false,
+      group: null
     };
   },
+  computed: {
+    handleMobileNav() {
+      if(this.$store.state.mobileNav === true || this.$store.state.mobileNav === false) {
+        this.drawer = true;
+      }
+    }
+  }
 };
 </script>
 
 <style scoped>
+::-webkit-scrollbar {
+  display: none;
+}
+
 .v-list-item__title {
   color: white;
   font-weight: bold;
+  display: block;
 }
 </style>

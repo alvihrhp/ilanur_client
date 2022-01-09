@@ -7,12 +7,12 @@
       background: 'dashboard.jpg'
     }"
     ></Banner>
-    <v-card color="#fffff" height="120px">
+    <v-card color="#fffff" height="fit-content">
       <v-row justify="center" align="center">
-        <v-col cols="3" md="3" sm="3" v-for="(data, i) in amountDopa" :key="i" class="col-dopa">
+        <v-col cols="6" md="3" sm="3" lg="3" v-for="(data, i) in amountDopa" :key="i" class="col-dopa">
           <h4 class="dopa-title">{{data.name}}</h4>
           <div class="dopa-date">
-            <v-icon>mdi-calendar-text</v-icon>
+            <v-icon class="calendar-icon">mdi-calendar-text</v-icon>
             <h5 style="margin-left: 5px; opacity: 0.8;">{{new Date().toLocaleDateString()}}</h5>
           </div>
           <h1 class="dopa-amount">{{data.amount}}</h1>
@@ -117,6 +117,7 @@ export default {
 
 .dopa-date {
   display: flex;
+  align-items: center;
 }
 
 .dopa-amount {
@@ -125,7 +126,29 @@ export default {
 }
 
 .card-chart-pengunjung {
-  margin: 50px;
+  margin: 50px 50px 0;
   padding: 30px 50px;
+}
+
+@media screen and (max-width: 900px) {
+  .dopa-title {
+    font-size: 0.875rem;
+  }
+
+  .dopa-date h5 {
+    font-size: 0.75rem;
+  }
+
+  .calendar-icon {
+    font-size: 0.875rem;
+  }
+
+  .dopa-amount {
+    font-size: 1.25rem;
+  }
+
+  .card-chart-pengunjung {
+    padding: 1rem 0.5rem;
+  }
 }
 </style>

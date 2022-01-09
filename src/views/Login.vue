@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="login">
     <v-row justify="center" align="center" class="container-row">
-      <v-col cols="4" md="4" sm="4">
+      <v-col cols="10" md="6" sm="8" lg="5">
         <v-card
           :height="cardHeight"
           color="#ee9632"
@@ -13,10 +13,10 @@
           <div class="alert-container" v-show="isError">
             <v-alert type="error">{{ errorMessage }}</v-alert>
           </div>
-          <v-form>
+          <v-form v-on:submit="login">
             <v-container>
               <v-row justify="center">
-                <v-col cols="8" sm="10" md="10">
+                <v-col cols="10" sm="10" md="10" lg="9">
                   <v-text-field
                     color="#ffffff"
                     solo
@@ -25,7 +25,7 @@
                     outlined
                   ></v-text-field>
                 </v-col>
-                <v-col cols="8" sm="10" md="10">
+                <v-col cols="10" sm="10" md="10" lg="9">
                   <v-text-field
                     color="#ffffff"
                     solo
@@ -72,7 +72,10 @@ export default {
     };
   },
   methods: {
-    login() {
+    login(e) {
+      if(e) {
+        e.preventDefault();
+      }
       this.loadingButton = true;
       this.$store
         .dispatch("login", this.formInput)
@@ -102,6 +105,7 @@ export default {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("../assets/login.jpg") no-repeat center center;
   background-size: cover;
+  overflow: hidden;
 }
 
 .container-row {
@@ -133,4 +137,8 @@ export default {
 .button-login {
   color: #ffffff;
 }
+/* 
+.row {
+  margin: 0 !important;
+} */
 </style>

@@ -31,7 +31,7 @@
         from: 'Ronsen',
         formInput,
         btnTitle:'Create Ronsen',
-        btnIcon: 'mdi-laptop-mac',
+        btnIcon: 'mdi-skull-scan',
         createAction: 'createMasterRonsen'
       }"
         v-on:createRonsenSuccess="resetFormInput"

@@ -49,11 +49,24 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+html { 
+  overflow: auto !important; 
+}
+
+::-webkit-scrollbar {
+  width: 0px !important;
+}
+
 * {
   font-family: "Poppins", sans-serif !important;
 }
+
 .container {
-  padding: 0;
+  padding: 0 !important;
+}
+
+.row {
+   margin: 0 !important;
 }
 </style>
